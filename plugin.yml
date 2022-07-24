@@ -1,0 +1,7 @@
+---
+name: giveEmerald
+version: 0.0.1
+main: halinezumi\giveEmerald\Main
+api: 4.5.1
+src-namespace-prefix: halinezumi\giveEmerald
+...
