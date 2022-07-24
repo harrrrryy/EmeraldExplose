@@ -39,7 +39,7 @@ class Main extends PluginBase implements Listener{
                     $inventory->addItem($emerald);
                 }
                 return true;
-				break;
+                break;
         }
         return true;
     }
