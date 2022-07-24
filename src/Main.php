@@ -6,6 +6,9 @@ namespace halinezumi\giveEmerald;
 
 use pocketmine\plugin\PluginBase;
 
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
+
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
@@ -21,6 +24,24 @@ class Main extends PluginBase implements Listener{
 
     public function onEnable(): void{
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+    }
+
+    public function onCommand(CommandSender $s, Command $c, $label, array $a): bool{
+		$out = "";
+		$user = $s->getName();
+		switch($label){
+            case "test":
+                $s->sendMessage("success!!!");
+				$emerald = VanillaItems::EMERALD();
+                $inventory = $s->getInventory();
+            
+                if($inventory->canAddItem($emerald)){
+                    $inventory->addItem($emerald);
+                }
+                return true;
+				break;
+        }
+        return true;
     }
 
     
