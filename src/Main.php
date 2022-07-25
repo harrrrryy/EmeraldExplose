@@ -75,12 +75,22 @@ class Main extends PluginBase implements Listener
                     $inventory->addItem($emerald);
                 }
                 return true;
-                break;
             case "shuffle":
-                $this->array_count= count($this->event_array);
+                $this->array_count = count($this->event_array);
                 $this->shuffle($this->array_count);
                 return true;
-                break;
+            case "outputshuffle":
+                if($this->array_count==-1)
+                {
+                    $s->sendMessage("error: /shuffle is not excuted");
+                    return false;
+                }
+                $this->array_count = count($this->event_array);
+                for($i = 0; $i < $this->array_count; $i++)
+                {
+                    $s->sendMessage($this->event_array[$i].":".strval($this->random_number_dict[$this->event_array[$i]]));
+                }
+                return true;
         }
         return true;
     }
