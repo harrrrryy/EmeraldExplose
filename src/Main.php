@@ -50,12 +50,7 @@ class Main extends PluginBase implements Listener
     {
         for($i = 0; $i < $num; $i++)
         {
-            $this->random_number_dict[$this->event_array[$i]] = mt_rand(1, 3);
-        }
-
-        for($i = 0; $i < $num; $i++)
-        {
-            var_dump(strval($this->random_number_dict[$this->event_array[$i]]));
+            $this->random_number_dict[$this->event_array[$i]] = mt_rand(0, 3);
         }
         return true;
     } 
