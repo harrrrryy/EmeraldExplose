@@ -39,6 +39,7 @@ class Main extends PluginBase implements Listener
                 $inventory->addItem($item);
             }
         }
+        return true;
     }
 
     public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
@@ -61,53 +62,31 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
-    
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
         $player = $event->getPlayer();
-        $emerald = VanillaItems::EMERALD();
-        $inventory = $player->getInventory();
-    
-        if($inventory->canAddItem($emerald)){
-            $inventory->addItem($emerald);
-        }
+        giveEmerald($player, 2);
     }
 
 
     public function afterTogglePlayer(PlayerToggleSneakEvent $event)
     {
         $player = $event->getPlayer();
-        $emerald = VanillaItems::EMERALD();
-        $inventory = $player->getInventory();
-    
-        if($inventory->canAddItem($emerald))
-        {
-            $inventory->addItem($emerald);
-        }
+        giveEmerald($player, 2);
     }
 
     //チェストなどのインベントリを開いたときに実行(プレイヤーインベントリは×)
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
-        $emerald = VanillaItems::EMERALD();
-        $inventory = $player->getInventory();
-    
-        if($inventory->canAddItem($emerald))
-        {
-            $inventory->addItem($emerald);
-        }
+        giveEmerald($player, 2);
     }
 
     public function BlockBreak(BlockBreakEvent $event)
     {
         $player = $event->getPlayer();
-        $emerald = VanillaItems::EMERALD();
-        $inventory = $player->getInventory();
-    
-        if($inventory->canAddItem($emerald))
+        if(giveEmerald($player, 2))
         {
-            $inventory->addItem($emerald);
             var_dump("BlockBreakEvent:execute");
         }
     }
