@@ -15,6 +15,7 @@ use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\block\BlockBreakEvent;
 
+use pocketmine\player\Player;
 
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -65,27 +66,27 @@ class Main extends PluginBase implements Listener
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
         $player = $event->getPlayer();
-        giveEmerald($player, 2);
+        $this->giveEmerald($player, 2);
     }
 
 
     public function afterTogglePlayer(PlayerToggleSneakEvent $event)
     {
         $player = $event->getPlayer();
-        giveEmerald($player, 2);
+        $this->giveEmerald($player, 2);
     }
 
     //チェストなどのインベントリを開いたときに実行(プレイヤーインベントリは×)
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
-        giveEmerald($player, 2);
+        $this->giveEmerald($player, 2);
     }
 
     public function BlockBreak(BlockBreakEvent $event)
     {
         $player = $event->getPlayer();
-        if(giveEmerald($player, 2))
+        if($this->giveEmerald($player, 2))
         {
             var_dump("BlockBreakEvent:execute");
         }
