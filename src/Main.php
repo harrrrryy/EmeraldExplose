@@ -76,15 +76,18 @@ class Main extends PluginBase implements Listener
                 }
                 return true;
                 break;
+            case "shuffle":
+                $this->array_count= count($this->event_array);
+                $this->shuffle($this->array_count);
+                return true;
+                break;
         }
         return true;
     }
 
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
-        //$this->array_count= count($this->event_array);
         $player = $event->getPlayer();
-        //$this->shuffle($this->array_count);
         $this->giveEmerald($player, 2);
     }
 
