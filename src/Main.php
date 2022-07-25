@@ -20,16 +20,33 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 
-class Main extends PluginBase implements Listener{
+class Main extends PluginBase implements Listener
+{
 
-    public function onEnable(): void{
+    public function onEnable(): void
+    {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
     }
 
-    public function onCommand(CommandSender $s, Command $c, $label, array $a): bool{
+    public function giveEmerald(Player $p, int $num): bool
+    {
+        $item=VanillaItems::EMERALD();
+        $inventory = $p->getInventory();
+        for($i = 1; $i <= $num; $i++)
+        {
+            if($inventory->canAddItem($item))
+            {
+                $inventory->addItem($item);
+            }
+        }
+    }
+
+    public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
+    {
 		$out = "";
 		$user = $s->getName();
-		switch($label){
+		switch($label)
+        {
             case "test":
                 $s->sendMessage("success!!!");
 				$emerald = VanillaItems::EMERALD();
@@ -45,7 +62,8 @@ class Main extends PluginBase implements Listener{
     }
 
     
-    public function onJoinPlayer(PlayerJoinEVent $event){
+    public function onJoinPlayer(PlayerJoinEVent $event)
+    {
         $player = $event->getPlayer();
         $emerald = VanillaItems::EMERALD();
         $inventory = $player->getInventory();
@@ -56,36 +74,41 @@ class Main extends PluginBase implements Listener{
     }
 
 
-    public function afterTogglePlayer(PlayerToggleSneakEvent $event){
+    public function afterTogglePlayer(PlayerToggleSneakEvent $event)
+    {
         $player = $event->getPlayer();
         $emerald = VanillaItems::EMERALD();
         $inventory = $player->getInventory();
     
-        if($inventory->canAddItem($emerald)){
+        if($inventory->canAddItem($emerald))
+        {
             $inventory->addItem($emerald);
         }
     }
 
     //チェストなどのインベントリを開いたときに実行(プレイヤーインベントリは×)
-    public function openInventory(InventoryOpenEvent $event){
+    public function openInventory(InventoryOpenEvent $event)
+    {
         $player = $event->getPlayer();
         $emerald = VanillaItems::EMERALD();
         $inventory = $player->getInventory();
     
-        if($inventory->canAddItem($emerald)){
+        if($inventory->canAddItem($emerald))
+        {
             $inventory->addItem($emerald);
         }
     }
 
-    public function BlockBreak(BlockBreakEvent $event){
+    public function BlockBreak(BlockBreakEvent $event)
+    {
         $player = $event->getPlayer();
         $emerald = VanillaItems::EMERALD();
         $inventory = $player->getInventory();
     
-        if($inventory->canAddItem($emerald)){
+        if($inventory->canAddItem($emerald))
+        {
             $inventory->addItem($emerald);
             var_dump("BlockBreakEvent:execute");
         }
     }
-
 }
