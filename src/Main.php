@@ -23,6 +23,9 @@ use pocketmine\item\VanillaItems;
 
 class Main extends PluginBase implements Listener
 {
+    public $event_array = array("playerJoin","playerToggleSneak","inventoryOpen","blockBreak");
+    public $array_count = -1;
+    private $random_number_dict;
 
     public function onEnable(): void
     {
@@ -42,6 +45,20 @@ class Main extends PluginBase implements Listener
         }
         return true;
     }
+
+    public function shuffle(int $num): bool
+    {
+        for($i = 0; $i < $num; $i++)
+        {
+            $this->random_number_dict[$this->event_array[$i]] = mt_rand(1, 3);
+        }
+
+        for($i = 0; $i < $num; $i++)
+        {
+            var_dump(strval($this->random_number_dict[$this->event_array[$i]]));
+        }
+        return true;
+    } 
 
     public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
     {
@@ -65,7 +82,9 @@ class Main extends PluginBase implements Listener
 
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
+        //$this->array_count= count($this->event_array);
         $player = $event->getPlayer();
+        //$this->shuffle($this->array_count);
         $this->giveEmerald($player, 2);
     }
 
