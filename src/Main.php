@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace halinezumi\giveEmerald;
+namespace halinezumi\emeraldExplose;
 
 use pocketmine\plugin\PluginBase;
 

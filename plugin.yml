@@ -1,8 +1,8 @@
-name: giveEmerald
+name: emeraldExplose
 version: 0.0.1
-main: halinezumi\giveEmerald\Main
+main: halinezumi\emeraldExplose\Main
 api: 4.5.1
-src-namespace-prefix: halinezumi\giveEmerald
+src-namespace-prefix: halinezumi\emeraldExplose
 commands:
   test:
     description: "test command"
