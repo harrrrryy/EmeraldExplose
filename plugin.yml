@@ -8,6 +8,14 @@ commands:
     description: "test command"
     usage: "/test"
     permission: emeraldexplose.prepare
+  shuffle:
+    description: "shuffle number of emerald"
+    usage: "/shuffle"
+    permission: emeraldexplose.prepare
+  outputshuffle:
+    description: "output random number by using /shuffle"
+    usage: "/outputshuffle"
+    permission: emeraldexplose.prepare
 
 permissions:
   emeraldexplose.prepare:
