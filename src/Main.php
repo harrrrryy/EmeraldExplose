@@ -26,6 +26,8 @@ class Main extends PluginBase implements Listener
     public $event_array = array("playerJoin","playerToggleSneak","inventoryOpen","blockBreak");
     public $array_count = -1;
     private $random_number_dict;
+    private $MIN_RANDOM_NUM = 0;
+    private $MAX_RANDOM_NUM = 3;
 
     public function onEnable(): void
     {
@@ -50,7 +52,7 @@ class Main extends PluginBase implements Listener
     {
         for($i = 0; $i < $num; $i++)
         {
-            $this->random_number_dict[$this->event_array[$i]] = mt_rand(0, 3);
+            $this->random_number_dict[$this->event_array[$i]] = mt_rand($this->MIN_RANDOM_NUM, $this->MAX_RANDOM_NUM);
         }
         return true;
     } 
@@ -75,7 +77,7 @@ class Main extends PluginBase implements Listener
                 $this->shuffle($this->array_count);
                 return true;
             case "outputshuffle":
-                if($this->array_count==-1)
+                if($this->array_count == -1)
                 {
                     $s->sendMessage("error: /shuffle is not excuted");
                     return false;
@@ -93,29 +95,38 @@ class Main extends PluginBase implements Listener
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
         $player = $event->getPlayer();
-        $this->giveEmerald($player, 2);
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, pow($this->random_number_dict["playerJoin"],3));
+        }
     }
 
 
     public function afterTogglePlayer(PlayerToggleSneakEvent $event)
     {
         $player = $event->getPlayer();
-        $this->giveEmerald($player, 2);
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerToggleSneak"]);
+        }
     }
 
     //チェストなどのインベントリを開いたときに実行(プレイヤーインベントリは×)
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
-        $this->giveEmerald($player, 2);
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["inventoryOpen"]);
+        }
     }
 
     public function BlockBreak(BlockBreakEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->giveEmerald($player, 2))
+        if($this->array_count != -1)
         {
-            var_dump("BlockBreakEvent:execute");
+            $this->giveEmerald($player, $this->random_number_dict["blockBreak"]);
         }
     }
 }
