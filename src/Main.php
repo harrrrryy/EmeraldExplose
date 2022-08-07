@@ -9,6 +9,8 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
+use pocketmine\entity\Entity;
+
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
@@ -28,15 +30,21 @@ class Main extends PluginBase implements Listener
     private $random_number_dict;
     private $MIN_RANDOM_NUM = 0;
     private $MAX_RANDOM_NUM = 3;
+    private $item_fact;
+    private $EMERALD_EXCHANGE_RATE = 20;
+    private $GIVE_TNT = 1;
+
 
     public function onEnable(): void
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->item_fact = new ItemFactory();
     }
+
 
     public function giveEmerald(Player $p, int $num): bool
     {
-        $item=VanillaItems::EMERALD();
+        $item = VanillaItems::EMERALD();
         $inventory = $p->getInventory();
         for($i = 1; $i <= $num; $i++)
         {
@@ -48,6 +56,7 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
+
     public function shuffle(int $num): bool
     {
         for($i = 0; $i < $num; $i++)
@@ -56,6 +65,7 @@ class Main extends PluginBase implements Listener
         }
         return true;
     } 
+
 
     public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
     {
@@ -88,9 +98,56 @@ class Main extends PluginBase implements Listener
                     $s->sendMessage($this->event_array[$i].":".strval($this->random_number_dict[$this->event_array[$i]]));
                 }
                 return true;
+            case "exchange_tnt":
+                $counter = 0;
+                //getの引数はID,meta,countの順
+                $emerald = $this->item_fact->get(388, 0, $this->EMERALD_EXCHANGE_RATE);
+                $inventory = $s->getInventory();
+
+                while(true)
+                {
+                    if($inventory->contains($emerald))
+                    {
+                        ++$counter;
+                        $inventory->removeItem($emerald);   
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                //交換条件を満たした際に1回だけ火打石を与える
+                if($counter != 0)
+                {
+                    //火打石を渡す
+                    $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
+                    if($inventory->canAddItem($flint_and_steel))
+                    {
+                        $inventory->addItem($flint_and_steel);
+                    }
+                }
+
+                //TNTはカウンターの数だけ与える
+                for($i = 1; $i <= $counter; $i++)
+                {
+                    //TNTを渡す
+                    $tnt = $this->item_fact->get(ItemIds::TNT, 0, $this->GIVE_TNT);
+                    if($inventory->canAddItem($tnt))
+                    {
+                        $inventory->addItem($tnt);
+                    }
+                } 
+                return true;
+            case "pos":
+                $position = $s->getPosition();
+                $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
+                return true;
         }
         return true;
     }
+   
 
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
@@ -111,6 +168,7 @@ class Main extends PluginBase implements Listener
         }
     }
 
+
     //チェストなどのインベントリを開いたときに実行(プレイヤーインベントリは×)
     public function openInventory(InventoryOpenEvent $event)
     {
@@ -120,6 +178,7 @@ class Main extends PluginBase implements Listener
             $this->giveEmerald($player, $this->random_number_dict["inventoryOpen"]);
         }
     }
+
 
     public function BlockBreak(BlockBreakEvent $event)
     {
