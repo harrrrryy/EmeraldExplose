@@ -31,6 +31,8 @@ class Main extends PluginBase implements Listener
     private $MIN_RANDOM_NUM = 0;
     private $MAX_RANDOM_NUM = 3;
     private $item_fact;
+    private $EMERALD_EXCHANGE_RATE = 20;
+    private $GIVE_TNT = 1;
 
 
     public function onEnable(): void
@@ -97,28 +99,51 @@ class Main extends PluginBase implements Listener
                 }
                 return true;
             case "exchange_tnt":
-                $emerald = $this->item_fact->get(388, 0, 10);
+                $counter = 0;
+                //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
+                $emerald = $this->item_fact->get(388, 0, $this->EMERALD_EXCHANGE_RATE);
                 $inventory = $s->getInventory();
-                //TODO:ƒAƒCƒeƒ€‚ğŒ¸‚ç‚·‚Ì‚ªãè‚­‚¢‚Á‚½‚Æ‚«‚¾‚¯TNT‚È‚Ç‚ğ“n‚·ğŒ‚ğ’Ç‰Á
-                $inventory->removeItem($emerald);   //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
-                //‰Î‘ÅÎ‚ğ“n‚·
-                $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
-                if($inventory->canAddItem($flint_and_steel))
+
+                while(true)
                 {
-                    $inventory->addItem($flint_and_steel);
+                    if($inventory->contains($emerald))
+                    {
+                        ++$counter;
+                        $inventory->removeItem($emerald);   
+
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                //TNT‚ğ“n‚·
-                $tnt = $this->item_fact->get(ItemIds::TNT, 0, 10);
-                for($i = 1; $i <= 2; $i++)
+
+                //ŒğŠ·ğŒ‚ğ–‚½‚µ‚½Û‚É1‰ñ‚¾‚¯‰Î‘ÅÎ‚ğ—^‚¦‚é
+                if($counter != 0)
                 {
+                    //‰Î‘ÅÎ‚ğ“n‚·
+                    $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
+                    if($inventory->canAddItem($flint_and_steel))
+                    {
+                        $inventory->addItem($flint_and_steel);
+                    }
+                }
+
+                //TNT‚ÍƒJƒEƒ“ƒ^[‚Ì”‚¾‚¯—^‚¦‚é
+                for($i = 1; $i <= $counter; $i++)
+                {
+                    //TNT‚ğ“n‚·
+                    $tnt = $this->item_fact->get(ItemIds::TNT, 0, $this->GIVE_TNT);
                     if($inventory->canAddItem($tnt))
                     {
                         $inventory->addItem($tnt);
                     }
-                }
+                } 
+                return true;
             case "pos":
                 $position = $s->getPosition();
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
+                return true;
         }
         return true;
     }
