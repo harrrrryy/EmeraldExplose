@@ -9,6 +9,8 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
+use pocketmine\entity\Entity;
+
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
@@ -28,11 +30,15 @@ class Main extends PluginBase implements Listener
     private $random_number_dict;
     private $MIN_RANDOM_NUM = 0;
     private $MAX_RANDOM_NUM = 3;
+    private $item_fact;
+
 
     public function onEnable(): void
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->item_fact = new ItemFactory();
     }
+
 
     public function giveEmerald(Player $p, int $num): bool
     {
@@ -48,6 +54,7 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
+
     public function shuffle(int $num): bool
     {
         for($i = 0; $i < $num; $i++)
@@ -56,6 +63,7 @@ class Main extends PluginBase implements Listener
         }
         return true;
     } 
+
 
     public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
     {
@@ -88,9 +96,14 @@ class Main extends PluginBase implements Listener
                     $s->sendMessage($this->event_array[$i].":".strval($this->random_number_dict[$this->event_array[$i]]));
                 }
                 return true;
+            case "exchange_tnt":
+                $item = $this->item_fact->get(388, 0, 10);
+                //TODO:アイテムを減らすのが上手くいったときだけTNTなどを渡す条件を追加
+                $s->getInventory()->removeItem($item);   //getの引数はID,meta,countの順
         }
         return true;
     }
+   
 
     public function onJoinPlayer(PlayerJoinEVent $event)
     {
@@ -111,6 +124,7 @@ class Main extends PluginBase implements Listener
         }
     }
 
+
     //チェストなどのインベントリを開いたときに実行(プレイヤーインベントリは×)
     public function openInventory(InventoryOpenEvent $event)
     {
@@ -120,6 +134,7 @@ class Main extends PluginBase implements Listener
             $this->giveEmerald($player, $this->random_number_dict["inventoryOpen"]);
         }
     }
+
 
     public function BlockBreak(BlockBreakEvent $event)
     {
