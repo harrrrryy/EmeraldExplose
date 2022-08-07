@@ -42,7 +42,7 @@ class Main extends PluginBase implements Listener
 
     public function giveEmerald(Player $p, int $num): bool
     {
-        $item=VanillaItems::EMERALD();
+        $item = VanillaItems::EMERALD();
         $inventory = $p->getInventory();
         for($i = 1; $i <= $num; $i++)
         {
@@ -97,9 +97,25 @@ class Main extends PluginBase implements Listener
                 }
                 return true;
             case "exchange_tnt":
-                $item = $this->item_fact->get(388, 0, 10);
+                $emerald = $this->item_fact->get(388, 0, 10);
+                $inventory = $s->getInventory();
                 //TODO:ƒAƒCƒeƒ€‚ðŒ¸‚ç‚·‚Ì‚ªãŽè‚­‚¢‚Á‚½‚Æ‚«‚¾‚¯TNT‚È‚Ç‚ð“n‚·ðŒ‚ð’Ç‰Á
-                $s->getInventory()->removeItem($item);   //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
+                $inventory->removeItem($emerald);   //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
+                //‰Î‘ÅÎ‚ð“n‚·
+                $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
+                if($inventory->canAddItem($flint_and_steel))
+                {
+                    $inventory->addItem($flint_and_steel);
+                }
+                //TNT‚ð“n‚·
+                $tnt = $this->item_fact->get(ItemIds::TNT, 0, 10);
+                for($i = 1; $i <= 2; $i++)
+                {
+                    if($inventory->canAddItem($tnt))
+                    {
+                        $inventory->addItem($tnt);
+                    }
+                }
             case "pos":
                 $position = $s->getPosition();
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
