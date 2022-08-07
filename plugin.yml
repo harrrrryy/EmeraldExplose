@@ -20,6 +20,10 @@ commands:
     description: "get TNT with emerald"
     usage: "/exchange_tnt"
     permission: emeraldexplose.prepare
+  pos:
+    description: "output now position of command sender"
+    usage: "/pos"
+    permission: emeraldexplose.prepare
 
 permissions:
   emeraldexplose.prepare:

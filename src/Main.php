@@ -100,6 +100,9 @@ class Main extends PluginBase implements Listener
                 $item = $this->item_fact->get(388, 0, 10);
                 //TODO:ƒAƒCƒeƒ€‚ğŒ¸‚ç‚·‚Ì‚ªãè‚­‚¢‚Á‚½‚Æ‚«‚¾‚¯TNT‚È‚Ç‚ğ“n‚·ğŒ‚ğ’Ç‰Á
                 $s->getInventory()->removeItem($item);   //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
+            case "pos":
+                $position = $s->getPosition();
+                $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
         }
         return true;
     }
