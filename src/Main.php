@@ -65,10 +65,18 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
-    public function gameEnd(Player $p)
+    public function gameEnd(Player $p = NULL)
     {
-        $p->sendMessage("Finish!!!!");
-        $p->sendMessage("WINNER : ".$p->getName());
+        if(!is_null($p))
+        {
+            $p->sendMessage("Finish!!!!");
+            $p->sendMessage("WINNER : ".$p->getName());
+        }
+        else
+        {
+            echo "game_end command was executed";
+        }
+        $this->DURING_GAME = false;
         return true;
     }
 
@@ -169,6 +177,8 @@ class Main extends PluginBase implements Listener
                 $this->array_count = count($this->event_array);
                 $this->shuffle($this->array_count);
                 return true;
+            case "game_end":
+                $this->gameEnd();
         }
         return true;
     }

@@ -28,6 +28,10 @@ commands:
     description: "execute when game is started"
     usage: "/game_start"
     permission: emeraldexplose.prepare
+  game_end:
+    description: "execute when game is ended"
+    usage: "/game_end"
+    permission: emeraldexplose.prepare
 
 permissions:
   emeraldexplose.prepare:
