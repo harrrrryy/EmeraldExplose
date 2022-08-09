@@ -36,6 +36,7 @@ class Main extends PluginBase implements Listener
     private $EMERALD_EXCHANGE_RATE = 20;
     private $GIVE_TNT = 1;
     private $ISWINNER = false;
+    private $DURING_GAME = false;
     
 
     public function onEnable(): void
@@ -47,6 +48,11 @@ class Main extends PluginBase implements Listener
 
     public function giveEmerald(Player $p, int $num): bool
     {
+        if(!$this->DURING_GAME)
+        {
+            return false;
+        }
+
         $item = VanillaItems::EMERALD();
         $inventory = $p->getInventory();
         for($i = 1; $i <= $num; $i++)
@@ -108,6 +114,11 @@ class Main extends PluginBase implements Listener
                 }
                 return true;
             case "exchange_tnt":
+                if(!$this->DURING_GAME)
+                {
+                    return false;
+                }
+
                 $counter = 0;
                 //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
                 $emerald = $this->item_fact->get(388, 0, $this->EMERALD_EXCHANGE_RATE);
@@ -152,6 +163,11 @@ class Main extends PluginBase implements Listener
             case "pos":
                 $position = $s->getPosition();
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
+                return true;
+            case "game_start":
+                $this->DURING_GAME = true;
+                $this->array_count = count($this->event_array);
+                $this->shuffle($this->array_count);
                 return true;
         }
         return true;
