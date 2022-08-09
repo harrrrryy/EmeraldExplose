@@ -12,6 +12,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 
 use pocketmine\event\Listener;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
@@ -33,7 +35,8 @@ class Main extends PluginBase implements Listener
     private $item_fact;
     private $EMERALD_EXCHANGE_RATE = 20;
     private $GIVE_TNT = 1;
-
+    private $ISWINNER = false;
+    
 
     public function onEnable(): void
     {
@@ -56,6 +59,12 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
+    public function gameEnd(Player $p)
+    {
+        $p->sendMessage("Finish!!!!");
+        $p->sendMessage("WINNER : ".$p->getName());
+        return true;
+    }
 
     public function shuffle(int $num): bool
     {
@@ -148,8 +157,19 @@ class Main extends PluginBase implements Listener
         return true;
     }
    
+    public function afterDeath(PlayerDeathEvent $event)
+    {
+        $player = $event->getPlayer();
+        $death_cause = $player->getLastDamageCause();
+        //TNT‚Å‚Ì”š€‚ÍCAUSE_BLOCK_EXPLOSION‚Å‚Í‚È‚­CAUSE_ENTITY_EXPLOSION
+        if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION && !$this->ISWINNER)
+        {
+            $this->ISWINNER = true;
+            $this->gameEnd($player);
+        }
+    }
 
-    public function onJoinPlayer(PlayerJoinEVent $event)
+    public function onJoinPlayer(PlayerJoinEvent $event)
     {
         $player = $event->getPlayer();
         if($this->array_count != -1)
