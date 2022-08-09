@@ -18,12 +18,15 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\block\BlockBreakEvent;
+use pocketmine\world\Position;
 
 use pocketmine\player\Player;
 
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
+
+use pocketmine\Server;
 
 class Main extends PluginBase implements Listener
 {
@@ -37,6 +40,7 @@ class Main extends PluginBase implements Listener
     private $GIVE_TNT = 1;
     private $ISWINNER = false;
     private $DURING_GAME = false;
+    private $resporn_position;
     
 
     public function onEnable(): void
@@ -65,7 +69,7 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
-    public function gameEnd(Player $p = NULL)
+    public function gameEnd(Player $p = NULL, Position $pos = NULL)
     {
         if(!is_null($p))
         {
@@ -77,6 +81,14 @@ class Main extends PluginBase implements Listener
             echo "game_end command was executed";
         }
         $this->DURING_GAME = false;
+        
+        if(!is_null($pos))
+        {
+            foreach(Server::getInstance()->getOnlinePlayers() as $player)
+            {
+                $player->teleport($pos);
+            }
+        }
         return true;
     }
 
@@ -174,11 +186,13 @@ class Main extends PluginBase implements Listener
                 return true;
             case "game_start":
                 $this->DURING_GAME = true;
+                $this->resporn_position = $s->getPosition();
                 $this->array_count = count($this->event_array);
                 $this->shuffle($this->array_count);
+                $s->sendMessage("game start!");
                 return true;
             case "game_end":
-                $this->gameEnd();
+                $this->gameEnd(null, $this->resporn_position);
         }
         return true;
     }
@@ -188,10 +202,12 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         $death_cause = $player->getLastDamageCause();
         //TNT‚Å‚Ì”šŽ€‚ÍCAUSE_BLOCK_EXPLOSION‚Å‚Í‚È‚­CAUSE_ENTITY_EXPLOSION
-        if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION && !$this->ISWINNER)
+        if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION 
+            && !$this->ISWINNER
+            && !is_null($this->resporn_position))
         {
             $this->ISWINNER = true;
-            $this->gameEnd($player);
+            $this->gameEnd($player, $this->resporn_position);
         }
     }
 
