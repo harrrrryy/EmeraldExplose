@@ -13,11 +13,16 @@ use pocketmine\entity\Entity;
 
 use pocketmine\event\Listener;
 use pocketmine\event\entity\EntityDamageEvent;
+
+use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\block\BlockBreakEvent;
+
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
+
 use pocketmine\event\inventory\InventoryOpenEvent;
-use pocketmine\event\block\BlockBreakEvent;
+
 use pocketmine\world\Position;
 
 use pocketmine\scheduler\TaskScheduler;
@@ -34,7 +39,12 @@ use pocketmine\Server;
 
 class Main extends PluginBase implements Listener
 {
-    public $event_array = array("playerJoin","playerToggleSneak","inventoryOpen","blockBreak");
+    public $event_array = array("playerJoin",
+                                "playerToggleSneak",
+                                "inventoryOpen",
+                                "blockBreak",
+                                "blockPlace");
+
     public $array_count = -1;
     private $random_number_dict;
     private $MIN_RANDOM_NUM = 0;
@@ -268,6 +278,15 @@ class Main extends PluginBase implements Listener
         if($this->array_count != -1)
         {
             $this->giveEmerald($player, $this->random_number_dict["blockBreak"]);
+        }
+    }
+
+    public function BlockPlace(BlockPlaceEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["blockPlace"]);
         }
     }
 }
