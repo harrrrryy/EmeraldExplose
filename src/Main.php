@@ -221,7 +221,7 @@ class Main extends PluginBase implements Listener
     {
         $player = $event->getPlayer();
         $death_cause = $player->getLastDamageCause();
-        //TNT縺ｫ繧医ｋ豁ｻ縺ｯCAUSE_BLOCK_EXPLOSION縺ｧ縺ｯ縺ｪ縺修AUSE_ENTITY_EXPLOSION
+        //TNTが死因の時はCAUSE_BLOCK_EXPLOSIONではなくCAUSE_ENTITY_EXPLOSIONを使う
         if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION 
             && !$this->ISWINNER
             && !is_null($this->resporn_position))
