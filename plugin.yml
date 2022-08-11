@@ -24,6 +24,14 @@ commands:
     description: "output now position of command sender"
     usage: "/pos"
     permission: emeraldexplose.prepare
+  game_start:
+    description: "execute when game is started"
+    usage: "/game_start"
+    permission: emeraldexplose.prepare
+  game_end:
+    description: "execute when game is ended"
+    usage: "/game_end"
+    permission: emeraldexplose.prepare
 
 permissions:
   emeraldexplose.prepare:

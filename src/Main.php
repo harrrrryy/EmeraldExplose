@@ -12,16 +12,25 @@ use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 
 use pocketmine\event\Listener;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\block\BlockBreakEvent;
+use pocketmine\world\Position;
+
+use pocketmine\scheduler\TaskScheduler;
+use pocketmine\scheduler\Task;
+use pocketmine\scheduler\ClosureTask;
 
 use pocketmine\player\Player;
 
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
+
+use pocketmine\Server;
 
 class Main extends PluginBase implements Listener
 {
@@ -33,7 +42,10 @@ class Main extends PluginBase implements Listener
     private $item_fact;
     private $EMERALD_EXCHANGE_RATE = 20;
     private $GIVE_TNT = 1;
-
+    private $ISWINNER = false;
+    private $DURING_GAME = false;
+    private $resporn_position;
+    
 
     public function onEnable(): void
     {
@@ -44,6 +56,11 @@ class Main extends PluginBase implements Listener
 
     public function giveEmerald(Player $p, int $num): bool
     {
+        if(!$this->DURING_GAME)
+        {
+            return false;
+        }
+
         $item = VanillaItems::EMERALD();
         $inventory = $p->getInventory();
         for($i = 1; $i <= $num; $i++)
@@ -56,6 +73,29 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
+    public function gameEnd(Player $p = NULL, Position $pos = NULL)
+    {
+        if(!is_null($p))
+        {
+            Server::getInstance()->getLogger()->info("Finish! \n Â§5WINNER : Â§2".$p->getName());
+            $p->sendMessage("Â§lFinish!!!!");
+            $p->sendMessage("Â§lÂ§5WINNER : Â§lÂ§2".$p->getName());
+        }
+        else
+        {
+            echo "game_end command was executed";
+        }
+        $this->DURING_GAME = false;
+        
+        if(!is_null($pos))
+        {
+            foreach(Server::getInstance()->getOnlinePlayers() as $player)
+            {
+                $player->teleport($pos);
+            }
+        }
+        return true;
+    }
 
     public function shuffle(int $num): bool
     {
@@ -99,8 +139,13 @@ class Main extends PluginBase implements Listener
                 }
                 return true;
             case "exchange_tnt":
+                if(!$this->DURING_GAME)
+                {
+                    return false;
+                }
+
                 $counter = 0;
-                //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
+                //getãƒ¡ã‚½ãƒƒãƒ‰ã®å¼•æ•°ã¯ID,METAã€å€‹æ•°ã®é †
                 $emerald = $this->item_fact->get(388, 0, $this->EMERALD_EXCHANGE_RATE);
                 $inventory = $s->getInventory();
 
@@ -118,10 +163,9 @@ class Main extends PluginBase implements Listener
                     }
                 }
 
-                //ŒğŠ·ğŒ‚ğ–‚½‚µ‚½Û‚É1‰ñ‚¾‚¯‰Î‘ÅÎ‚ğ—^‚¦‚é
+                //TNTã‚’ä¸ãˆã‚‹ã¨ãã®ã¿ç«æ‰“çŸ³ã‚’1å€‹ä¸ãˆã‚‹
                 if($counter != 0)
                 {
-                    //‰Î‘ÅÎ‚ğ“n‚·
                     $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
                     if($inventory->canAddItem($flint_and_steel))
                     {
@@ -129,10 +173,9 @@ class Main extends PluginBase implements Listener
                     }
                 }
 
-                //TNT‚ÍƒJƒEƒ“ƒ^[‚Ì”‚¾‚¯—^‚¦‚é
+                //TNTã‚’ã‚¨ãƒ¡ãƒ©ãƒ«ãƒ‰ã®å€‹æ•°ã«å¿œã˜ã¦ä¸ãˆã‚‹
                 for($i = 1; $i <= $counter; $i++)
                 {
-                    //TNT‚ğ“n‚·
                     $tnt = $this->item_fact->get(ItemIds::TNT, 0, $this->GIVE_TNT);
                     if($inventory->canAddItem($tnt))
                     {
@@ -144,12 +187,51 @@ class Main extends PluginBase implements Listener
                 $position = $s->getPosition();
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
                 return true;
+            case "game_start":
+                $count = 3;
+                $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(
+                    function() use ($s, &$count) : void
+                    {
+                        if($count >= 1)
+                        {
+                            $s->sendMessage("Â§l".strval($count));
+                            --$count;
+                        }
+                        else
+                        {
+                            $s->sendMessage("Â§lÂ§3game start!");
+                            $this->getScheduler()->cancelAllTasks();
+                            $this->DURING_GAME = true;
+                            $this->ISWINNER = false;
+                            $this->resporn_position = $s->getPosition();
+                            $this->array_count = count($this->event_array);
+                            $this->shuffle($this->array_count);
+                            return;
+                        }
+                    }
+                ), 20);
+                return true;
+            case "game_end":
+                $this->gameEnd(null, $this->resporn_position);
         }
         return true;
     }
    
+    public function afterDeath(PlayerDeathEvent $event)
+    {
+        $player = $event->getPlayer();
+        $death_cause = $player->getLastDamageCause();
+        //TNTãŒæ­»å› ã®æ™‚ã¯CAUSE_BLOCK_EXPLOSIONã§ã¯ãªãCAUSE_ENTITY_EXPLOSIONã‚’ä½¿ã†
+        if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION 
+            && !$this->ISWINNER
+            && !is_null($this->resporn_position))
+        {
+            $this->ISWINNER = true;
+            $this->gameEnd($player, $this->resporn_position);
+        }
+    }
 
-    public function onJoinPlayer(PlayerJoinEVent $event)
+    public function onJoinPlayer(PlayerJoinEvent $event)
     {
         $player = $event->getPlayer();
         if($this->array_count != -1)
@@ -169,7 +251,7 @@ class Main extends PluginBase implements Listener
     }
 
 
-    //ƒ`ƒFƒXƒg‚È‚Ç‚ÌƒCƒ“ƒxƒ“ƒgƒŠ‚ğŠJ‚¢‚½‚Æ‚«‚ÉÀs(ƒvƒŒƒCƒ„[ƒCƒ“ƒxƒ“ƒgƒŠ‚Í~)
+    //ãƒã‚§ã‚¹ãƒˆãªã©ã®ã‚¤ãƒ³ãƒ™ãƒ³ãƒˆãƒªã‚’é–‹ã„ãŸã¨ãã«å®Ÿè¡Œ
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
