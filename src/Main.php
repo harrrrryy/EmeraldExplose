@@ -20,6 +20,10 @@ use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\world\Position;
 
+use pocketmine\scheduler\TaskScheduler;
+use pocketmine\scheduler\Task;
+use pocketmine\scheduler\ClosureTask;
+
 use pocketmine\player\Player;
 
 use pocketmine\item\ItemFactory;
@@ -141,7 +145,7 @@ class Main extends PluginBase implements Listener
                 }
 
                 $counter = 0;
-                //get関数の引数はID,meta,countの順
+                //getメソッドの引数はID,META、個数の順
                 $emerald = $this->item_fact->get(388, 0, $this->EMERALD_EXCHANGE_RATE);
                 $inventory = $s->getInventory();
 
@@ -159,7 +163,7 @@ class Main extends PluginBase implements Listener
                     }
                 }
 
-                //TNTを１つ以上もらった時のみ火打石を与える
+                //TNTを与えるときのみ火打石を1個与える
                 if($counter != 0)
                 {
                     $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
@@ -169,7 +173,7 @@ class Main extends PluginBase implements Listener
                     }
                 }
 
-                //TNTエメラルドの個数に応じてTNTを与える
+                //TNTをエメラルドの個数に応じて与える
                 for($i = 1; $i <= $counter; $i++)
                 {
                     $tnt = $this->item_fact->get(ItemIds::TNT, 0, $this->GIVE_TNT);
@@ -184,12 +188,28 @@ class Main extends PluginBase implements Listener
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
                 return true;
             case "game_start":
-                $this->DURING_GAME = true;
-                $this->ISWINNER = false;
-                $this->resporn_position = $s->getPosition();
-                $this->array_count = count($this->event_array);
-                $this->shuffle($this->array_count);
-                $s->sendMessage("game start!");
+                $count = 3;
+                $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(
+                    function() use ($s, &$count) : void
+                    {
+                        if($count >= 1)
+                        {
+                            $s->sendMessage("§l".strval($count));
+                            --$count;
+                        }
+                        else
+                        {
+                            $s->sendMessage("§l§3game start!");
+                            $this->getScheduler()->cancelAllTasks();
+                            $this->DURING_GAME = true;
+                            $this->ISWINNER = false;
+                            $this->resporn_position = $s->getPosition();
+                            $this->array_count = count($this->event_array);
+                            $this->shuffle($this->array_count);
+                            return;
+                        }
+                    }
+                ), 20);
                 return true;
             case "game_end":
                 $this->gameEnd(null, $this->resporn_position);
@@ -201,7 +221,7 @@ class Main extends PluginBase implements Listener
     {
         $player = $event->getPlayer();
         $death_cause = $player->getLastDamageCause();
-        //TNTによる死はCAUSE_BLOCK_EXPLOSIONではなくCAUSE_ENTITY_EXPLOSION
+        //TNT縺ｫ繧医ｋ豁ｻ縺ｯCAUSE_BLOCK_EXPLOSION縺ｧ縺ｯ縺ｪ縺修AUSE_ENTITY_EXPLOSION
         if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION 
             && !$this->ISWINNER
             && !is_null($this->resporn_position))
@@ -231,7 +251,7 @@ class Main extends PluginBase implements Listener
     }
 
 
-    //プレイヤーのインベントリではなく、チェストなどを開けたときに発火
+    //チェストなどのインベントリを開いたときに実行
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
