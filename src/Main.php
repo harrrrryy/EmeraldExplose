@@ -23,6 +23,7 @@ use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
+use pocketmine\event\player\PlayerJumpEvent;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
 
@@ -49,7 +50,8 @@ class Main extends PluginBase implements Listener
                                 "blockPlace",
                                 "playerDropItem",
                                 "playerEmote",
-                                "playerBedLeave");
+                                "playerBedLeave",
+                                "playerJump");
 
     public $array_count = -1;
     private $random_number_dict;
@@ -293,6 +295,16 @@ class Main extends PluginBase implements Listener
         if($this->array_count != -1)
         {
             $this->giveEmerald($player, $this->random_number_dict["playerBedLeave"]);
+        }
+    }
+
+
+    public function playerJump(PlayerJumpEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerJump"]);
         }
     }
 
