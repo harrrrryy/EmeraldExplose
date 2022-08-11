@@ -73,8 +73,9 @@ class Main extends PluginBase implements Listener
     {
         if(!is_null($p))
         {
-            $p->sendMessage("Finish!!!!");
-            $p->sendMessage("WINNER : ".$p->getName());
+            Server::getInstance()->getLogger()->info("Finish! \n Â§5WINNER : Â§2".$p->getName());
+            $p->sendMessage("Â§lFinish!!!!");
+            $p->sendMessage("Â§lÂ§5WINNER : Â§lÂ§2".$p->getName());
         }
         else
         {
@@ -140,7 +141,7 @@ class Main extends PluginBase implements Listener
                 }
 
                 $counter = 0;
-                //get‚Ìˆø”‚ÍID,meta,count‚Ì‡
+                //geté–¢æ•°ã®å¼•æ•°ã¯ID,meta,countã®é †
                 $emerald = $this->item_fact->get(388, 0, $this->EMERALD_EXCHANGE_RATE);
                 $inventory = $s->getInventory();
 
@@ -158,10 +159,9 @@ class Main extends PluginBase implements Listener
                     }
                 }
 
-                //ŒğŠ·ğŒ‚ğ–‚½‚µ‚½Û‚É1‰ñ‚¾‚¯‰Î‘ÅÎ‚ğ—^‚¦‚é
+                //TNTã‚’ï¼‘ã¤ä»¥ä¸Šã‚‚ã‚‰ã£ãŸæ™‚ã®ã¿ç«æ‰“çŸ³ã‚’ä¸ãˆã‚‹
                 if($counter != 0)
                 {
-                    //‰Î‘ÅÎ‚ğ“n‚·
                     $flint_and_steel = VanillaItems::FLINT_AND_STEEL();     
                     if($inventory->canAddItem($flint_and_steel))
                     {
@@ -169,10 +169,9 @@ class Main extends PluginBase implements Listener
                     }
                 }
 
-                //TNT‚ÍƒJƒEƒ“ƒ^[‚Ì”‚¾‚¯—^‚¦‚é
+                //TNTã‚¨ãƒ¡ãƒ©ãƒ«ãƒ‰ã®å€‹æ•°ã«å¿œã˜ã¦TNTã‚’ä¸ãˆã‚‹
                 for($i = 1; $i <= $counter; $i++)
                 {
-                    //TNT‚ğ“n‚·
                     $tnt = $this->item_fact->get(ItemIds::TNT, 0, $this->GIVE_TNT);
                     if($inventory->canAddItem($tnt))
                     {
@@ -186,6 +185,7 @@ class Main extends PluginBase implements Listener
                 return true;
             case "game_start":
                 $this->DURING_GAME = true;
+                $this->ISWINNER = false;
                 $this->resporn_position = $s->getPosition();
                 $this->array_count = count($this->event_array);
                 $this->shuffle($this->array_count);
@@ -201,7 +201,7 @@ class Main extends PluginBase implements Listener
     {
         $player = $event->getPlayer();
         $death_cause = $player->getLastDamageCause();
-        //TNT‚Å‚Ì”š€‚ÍCAUSE_BLOCK_EXPLOSION‚Å‚Í‚È‚­CAUSE_ENTITY_EXPLOSION
+        //TNTã«ã‚ˆã‚‹æ­»ã¯CAUSE_BLOCK_EXPLOSIONã§ã¯ãªãCAUSE_ENTITY_EXPLOSION
         if($death_cause->getCause() == EntityDamageEvent::CAUSE_ENTITY_EXPLOSION 
             && !$this->ISWINNER
             && !is_null($this->resporn_position))
@@ -231,7 +231,7 @@ class Main extends PluginBase implements Listener
     }
 
 
-    //ƒ`ƒFƒXƒg‚È‚Ç‚ÌƒCƒ“ƒxƒ“ƒgƒŠ‚ğŠJ‚¢‚½‚Æ‚«‚ÉÀs(ƒvƒŒƒCƒ„[ƒCƒ“ƒxƒ“ƒgƒŠ‚Í~)
+    //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¤ãƒ³ãƒ™ãƒ³ãƒˆãƒªã§ã¯ãªãã€ãƒã‚§ã‚¹ãƒˆãªã©ã‚’é–‹ã‘ãŸã¨ãã«ç™ºç«
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
