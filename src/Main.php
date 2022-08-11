@@ -20,6 +20,9 @@ use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
+use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\event\player\PlayerEmoteEvent;
+use pocketmine\event\player\PlayerBedLeaveEvent;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
 
@@ -43,7 +46,10 @@ class Main extends PluginBase implements Listener
                                 "playerToggleSneak",
                                 "inventoryOpen",
                                 "blockBreak",
-                                "blockPlace");
+                                "blockPlace",
+                                "playerDropItem",
+                                "playerEmote",
+                                "playerBedLeave");
 
     public $array_count = -1;
     private $random_number_dict;
@@ -257,6 +263,36 @@ class Main extends PluginBase implements Listener
         if($this->array_count != -1)
         {
             $this->giveEmerald($player, $this->random_number_dict["playerToggleSneak"]);
+        }
+    }
+
+
+    public function playerDropItem(PlayerDropItemEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerDropItem"]);
+        }
+    }
+
+
+    public function playerEmote(PlayerEmoteEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerEmote"]);
+        }
+    }
+
+
+    public function playerBedLeave(PlayerBedLeaveEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerBedLeave"]);
         }
     }
 
