@@ -24,6 +24,8 @@ use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerJumpEvent;
+use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
 
@@ -51,7 +53,9 @@ class Main extends PluginBase implements Listener
                                 "playerDropItem",
                                 "playerEmote",
                                 "playerBedLeave",
-                                "playerJump");
+                                "playerJump",
+                                "playerToggleSprint",
+                                "playerToggleSwim");
 
     public $array_count = -1;
     private $random_number_dict;
@@ -309,6 +313,39 @@ class Main extends PluginBase implements Listener
     }
 
 
+    /*
+    あまりにもエメラルド取得スピードが速いのでコメントアウト
+    public function playerMove(PlayerMoveEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerMove"]);
+        }
+    }
+    */
+
+
+    public function playerToggleSprint(PlayerToggleSprintEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerToggleSprint"]);
+        }
+    }
+
+
+    public function playerToggleSwim(PlayerToggleSwimEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerToggleSwim"]);
+        }
+    }
+
+    
     //チェストなどのインベントリを開いたときに実行
     public function openInventory(InventoryOpenEvent $event)
     {
