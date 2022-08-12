@@ -61,9 +61,6 @@ class Main extends PluginBase implements Listener
 
     public $event_struct;
     public $array_count = -1;
-    private $random_number_dict;
-    private $MIN_RANDOM_NUM = 0;
-    private $MAX_RANDOM_NUM = 3;
     private $item_fact;
     private $EMERALD_EXCHANGE_RATE = 20;
     private $GIVE_TNT = 1;
@@ -78,16 +75,16 @@ class Main extends PluginBase implements Listener
         $this->item_fact = new ItemFactory();
         $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する"),
                                 "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除"),
-                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする"),
-                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する"),
-                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する"),
                                 "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる"),
                                 "playerEmote" => new EventStructure(5,0,"エモートを実行する"),
                                 "playerBedLeave" => new EventStructure(20,5,"ベッドから離れる"),
                                 "playerJump" => new EventStructure(2,0,"ジャンプする"),
                                 "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除"),
                                 "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除"),
-                                "playerEditBook" => new EventStructure(128,64,"本の編集")];
+                                "playerEditBook" => new EventStructure(128,64,"本の編集"),
+                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする"),
+                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する"),
+                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する")];
     }
 
 
@@ -134,13 +131,8 @@ class Main extends PluginBase implements Listener
         return true;
     }
 
-    public function shuffle(int $num): bool
+    public function shuffle(): bool
     {
-        for($i = 0; $i < $num; $i++)
-        {
-            $this->random_number_dict[$this->event_array[$i]] = mt_rand($this->MIN_RANDOM_NUM, $this->MAX_RANDOM_NUM);
-        }
-
         foreach($this->event_struct as $key => $value)
         {
             $this->event_struct[$key]->can_get_emerald = mt_rand($this->event_struct[$key]->emerald_min, $this->event_struct[$key]->emerald_max);
@@ -166,20 +158,9 @@ class Main extends PluginBase implements Listener
                 return true;
             case "shuffle":
                 $this->array_count = count($this->event_array);
-                $this->shuffle($this->array_count);
+                $this->shuffle();
                 return true;
             case "outputshuffle":
-                if($this->array_count == -1)
-                {
-                    $s->sendMessage("error: /shuffle is not excuted");
-                    return false;
-                }
-                $this->array_count = count($this->event_array);
-                for($i = 0; $i < $this->array_count; $i++)
-                {
-                    $s->sendMessage($this->event_array[$i].":".strval($this->random_number_dict[$this->event_array[$i]]));
-                }
-
                 foreach($this->event_struct as $key => $value)
                 {
                     $s->sendMessage($this->event_struct[$key]->explanation.": ".strval($this->event_struct[$key]->can_get_emerald));
@@ -252,7 +233,7 @@ class Main extends PluginBase implements Listener
                             $this->ISWINNER = false;
                             $this->resporn_position = $s->getPosition();
                             $this->array_count = count($this->event_array);
-                            $this->shuffle($this->array_count);
+                            $this->shuffle();
                             return;
                         }
                     }
@@ -283,7 +264,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, pow($this->random_number_dict["playerJoin"],3));
+            $this->giveEmerald($player, $this->event_struct["playerJoin"]->can_get_emerald);
         }
     }
 
@@ -293,7 +274,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerToggleSneak"]);
+            $this->giveEmerald($player, $this->event_struct["playerToggleSneak"]->can_get_emerald);
         }
     }
 
@@ -303,7 +284,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerDropItem"]);
+            $this->giveEmerald($player, $this->event_struct["playerDropItem"]->can_get_emerald);
         }
     }
 
@@ -313,7 +294,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerEmote"]);
+            $this->giveEmerald($player, $this->event_struct["playerEmote"]->can_get_emerald);
         }
     }
 
@@ -323,7 +304,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerBedLeave"]);
+            $this->giveEmerald($player, $this->event_struct["playerBedLeave"]->can_get_emerald);
         }
     }
 
@@ -333,7 +314,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerJump"]);
+            $this->giveEmerald($player, $this->event_struct["playerJump"]->can_get_emerald);
         }
     }
 
@@ -342,7 +323,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerEditBook"]);
+            $this->giveEmerald($player, $this->event_struct["playerEditBook"]->can_get_emerald);
         }
     }
 
@@ -365,7 +346,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerToggleSprint"]);
+            $this->giveEmerald($player, $this->event_struct["playerToggleSprint"]->can_get_emerald);
         }
     }
 
@@ -375,7 +356,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["playerToggleSwim"]);
+            $this->giveEmerald($player, $this->event_struct["playerToggleSwim"]->can_get_emerald);
         }
     }
 
@@ -386,7 +367,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["inventoryOpen"]);
+            $this->giveEmerald($player, $this->event_struct["inventoryOpen"]->can_get_emerald);
         }
     }
 
@@ -396,7 +377,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["blockBreak"]);
+            $this->giveEmerald($player, $this->event_struct["blockBreak"]->can_get_emerald);
         }
     }
 
@@ -405,7 +386,7 @@ class Main extends PluginBase implements Listener
         $player = $event->getPlayer();
         if($this->array_count != -1)
         {
-            $this->giveEmerald($player, $this->random_number_dict["blockPlace"]);
+            $this->giveEmerald($player, $this->event_struct["blockPlace"]->can_get_emerald);
         }
     }
 }
