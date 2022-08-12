@@ -13,11 +13,23 @@ use pocketmine\entity\Entity;
 
 use pocketmine\event\Listener;
 use pocketmine\event\entity\EntityDamageEvent;
+
+use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\block\BlockBreakEvent;
+
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
+use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\event\player\PlayerEmoteEvent;
+use pocketmine\event\player\PlayerBedLeaveEvent;
+use pocketmine\event\player\PlayerJumpEvent;
+use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
+use pocketmine\event\player\PlayerEditBookEvent;
+
 use pocketmine\event\inventory\InventoryOpenEvent;
-use pocketmine\event\block\BlockBreakEvent;
+
 use pocketmine\world\Position;
 
 use pocketmine\scheduler\TaskScheduler;
@@ -34,7 +46,19 @@ use pocketmine\Server;
 
 class Main extends PluginBase implements Listener
 {
-    public $event_array = array("playerJoin","playerToggleSneak","inventoryOpen","blockBreak");
+    public $event_array = array("playerJoin",
+                                "playerToggleSneak",
+                                "inventoryOpen",
+                                "blockBreak",
+                                "blockPlace",
+                                "playerDropItem",
+                                "playerEmote",
+                                "playerBedLeave",
+                                "playerJump",
+                                "playerToggleSprint",
+                                "playerToggleSwim",
+                                "playerEditBook");
+
     public $array_count = -1;
     private $random_number_dict;
     private $MIN_RANDOM_NUM = 0;
@@ -251,6 +275,88 @@ class Main extends PluginBase implements Listener
     }
 
 
+    public function playerDropItem(PlayerDropItemEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerDropItem"]);
+        }
+    }
+
+
+    public function playerEmote(PlayerEmoteEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerEmote"]);
+        }
+    }
+
+
+    public function playerBedLeave(PlayerBedLeaveEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerBedLeave"]);
+        }
+    }
+
+
+    public function playerJump(PlayerJumpEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerJump"]);
+        }
+    }
+
+    public function playerEditBook(PlayerEditBookEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerEditBook"]);
+        }
+    }
+
+
+    /*
+    あまりにもエメラルド取得スピードが速いのでコメントアウト
+    public function playerMove(PlayerMoveEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerMove"]);
+        }
+    }
+    */
+
+
+    public function playerToggleSprint(PlayerToggleSprintEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerToggleSprint"]);
+        }
+    }
+
+
+    public function playerToggleSwim(PlayerToggleSwimEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerToggleSwim"]);
+        }
+    }
+
+    
     //チェストなどのインベントリを開いたときに実行
     public function openInventory(InventoryOpenEvent $event)
     {
@@ -268,6 +374,15 @@ class Main extends PluginBase implements Listener
         if($this->array_count != -1)
         {
             $this->giveEmerald($player, $this->random_number_dict["blockBreak"]);
+        }
+    }
+
+    public function BlockPlace(BlockPlaceEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["blockPlace"]);
         }
     }
 }
