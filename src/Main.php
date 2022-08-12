@@ -26,6 +26,7 @@ use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerToggleSwimEvent;
+use pocketmine\event\player\PlayerEditBookEvent;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
 
@@ -55,7 +56,8 @@ class Main extends PluginBase implements Listener
                                 "playerBedLeave",
                                 "playerJump",
                                 "playerToggleSprint",
-                                "playerToggleSwim");
+                                "playerToggleSwim",
+                                "playerEditBook");
 
     public $array_count = -1;
     private $random_number_dict;
@@ -309,6 +311,15 @@ class Main extends PluginBase implements Listener
         if($this->array_count != -1)
         {
             $this->giveEmerald($player, $this->random_number_dict["playerJump"]);
+        }
+    }
+
+    public function playerEditBook(PlayerEditBookEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->array_count != -1)
+        {
+            $this->giveEmerald($player, $this->random_number_dict["playerEditBook"]);
         }
     }
 
