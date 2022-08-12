@@ -7,32 +7,34 @@ commands:
   test:
     description: "test command"
     usage: "/test"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
   shuffle:
     description: "shuffle number of emerald"
     usage: "/shuffle"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
   outputshuffle:
     description: "output random number by using /shuffle"
     usage: "/outputshuffle"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
   exchange_tnt:
     description: "get TNT with emerald"
     usage: "/exchange_tnt"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.player
   pos:
     description: "output now position of command sender"
     usage: "/pos"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
   game_start:
     description: "execute when game is started"
     usage: "/game_start"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
   game_end:
     description: "execute when game is ended"
     usage: "/game_end"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
 
 permissions:
-  emeraldexplose.prepare:
+  emeraldexplose.op:
     default: op
+  emeraldexplose.player:
+    default: true
