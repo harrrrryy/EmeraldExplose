@@ -59,6 +59,7 @@ class Main extends PluginBase implements Listener
                                 "playerToggleSwim",
                                 "playerEditBook");
 
+    public $event_struct;
     public $array_count = -1;
     private $random_number_dict;
     private $MIN_RANDOM_NUM = 0;
@@ -75,6 +76,18 @@ class Main extends PluginBase implements Listener
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->item_fact = new ItemFactory();
+        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する"),
+                                "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除"),
+                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする"),
+                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する"),
+                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する"),
+                                "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる"),
+                                "playerEmote" => new EventStructure(5,0,"エモートを実行する"),
+                                "playerBedLeave" => new EventStructure(20,5,"ベッドから離れる"),
+                                "playerJump" => new EventStructure(2,0,"ジャンプする"),
+                                "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除"),
+                                "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除"),
+                                "playerEditBook" => new EventStructure(128,64,"本の編集")];
     }
 
 
@@ -127,6 +140,11 @@ class Main extends PluginBase implements Listener
         {
             $this->random_number_dict[$this->event_array[$i]] = mt_rand($this->MIN_RANDOM_NUM, $this->MAX_RANDOM_NUM);
         }
+
+        foreach($this->event_struct as $key => $value)
+        {
+            $this->event_struct[$key]->can_get_emerald = mt_rand($this->event_struct[$key]->emerald_min, $this->event_struct[$key]->emerald_max);
+        }
         return true;
     } 
 
@@ -160,6 +178,11 @@ class Main extends PluginBase implements Listener
                 for($i = 0; $i < $this->array_count; $i++)
                 {
                     $s->sendMessage($this->event_array[$i].":".strval($this->random_number_dict[$this->event_array[$i]]));
+                }
+
+                foreach($this->event_struct as $key => $value)
+                {
+                    $s->sendMessage($this->event_struct[$key]->explanation.": ".strval($this->event_struct[$key]->can_get_emerald));
                 }
                 return true;
             case "exchange_tnt":
@@ -385,4 +408,20 @@ class Main extends PluginBase implements Listener
             $this->giveEmerald($player, $this->random_number_dict["blockPlace"]);
         }
     }
+}
+
+
+class EventStructure
+{
+    public int $emerald_max;
+    public int $emerald_min;
+    public string $explanation;
+    public int $can_get_emerald;
+    function __construct(int $max, int $min, string $explanation)
+    {
+        $this->emerald_max = $max;
+        $this->emerald_min = $min;
+        $this->explanation = $explanation;
+    }
+
 }
