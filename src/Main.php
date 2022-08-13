@@ -110,8 +110,11 @@ class Main extends PluginBase implements Listener
         if(!is_null($p))
         {
             Server::getInstance()->getLogger()->info("Finish! \n §5WINNER : §2".$p->getName());
-            $p->sendMessage("§lFinish!!!!");
-            $p->sendMessage("§l§5WINNER : §l§2".$p->getName());
+            foreach(Server::getInstance()->getOnlinePlayers() as $player)
+            {
+                $player->sendTitle("§lFinish!!!!");
+                $player->sendTitle("§l§5WINNER\n§l§2".$p->getName());
+            }     
         }
         else
         {
@@ -228,12 +231,14 @@ class Main extends PluginBase implements Listener
                     {
                         if($count >= 1)
                         {
-                            $s->sendMessage("§l".strval($count));
+                            foreach(Server::getInstance()->getOnlinePlayers() as $player)
+                            {
+                                $player->sendTitle("§l".strval($count));
+                            } 
                             --$count;
                         }
                         else
-                        {
-                            $s->sendMessage("§l§3game start!");
+                        {                                                     
                             $this->getScheduler()->cancelAllTasks();
                             $this->DURING_GAME = true;
                             $this->ISWINNER = false;
@@ -241,6 +246,7 @@ class Main extends PluginBase implements Listener
                             $this->shuffle();
                             foreach(Server::getInstance()->getOnlinePlayers() as $player)
                             {
+                                $player->sendTitle("§l§3game start!");
                                 $player->getInventory()->clearAll();
                             }
                             return;
