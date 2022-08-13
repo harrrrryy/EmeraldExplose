@@ -64,12 +64,12 @@ class Main extends PluginBase implements Listener
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->item_fact = new ItemFactory();
-        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する",-1),
+        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する",10),
                                 "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除",30),
                                 "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる",20),
                                 "playerEmote" => new EventStructure(5,0,"エモートを実行する",15),
                                 "playerBedLeave" => new EventStructure(20,5,"ベッドから離れる",-1),
-                                "playerJump" => new EventStructure(2,0,"ジャンプする",300),
+                                "playerJump" => new EventStructure(2,0,"ジャンプする",70),
                                 "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除",30),
                                 "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除",30),
                                 "playerEditBook" => new EventStructure(128,64,"本の編集",-1),
