@@ -1,14 +1,40 @@
-name: giveEmerald
+name: emeraldExplose
 version: 0.0.1
-main: halinezumi\giveEmerald\Main
+main: halinezumi\emeraldExplose\Main
 api: 4.5.1
-src-namespace-prefix: halinezumi\giveEmerald
+src-namespace-prefix: halinezumi\emeraldExplose
 commands:
   test:
     description: "test command"
     usage: "/test"
-    permission: emeraldexplose.prepare
+    permission: emeraldexplose.op
+  shuffle:
+    description: "shuffle number of emerald"
+    usage: "/shuffle"
+    permission: emeraldexplose.op
+  outputshuffle:
+    description: "output random number by using /shuffle"
+    usage: "/outputshuffle"
+    permission: emeraldexplose.op
+  exchange_tnt:
+    description: "get TNT with emerald"
+    usage: "/exchange_tnt"
+    permission: emeraldexplose.player
+  pos:
+    description: "output now position of command sender"
+    usage: "/pos"
+    permission: emeraldexplose.op
+  game_start:
+    description: "execute when game is started"
+    usage: "/game_start"
+    permission: emeraldexplose.op
+  game_end:
+    description: "execute when game is ended"
+    usage: "/game_end"
+    permission: emeraldexplose.op
 
 permissions:
-  emeraldexplose.prepare:
+  emeraldexplose.op:
     default: op
+  emeraldexplose.player:
+    default: true
