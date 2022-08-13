@@ -27,6 +27,8 @@ use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
+use pocketmine\event\player\PlayerBucketFillEvent;
+use pocketmine\event\player\PlayerChatEvent;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
 
@@ -69,9 +71,11 @@ class Main extends PluginBase implements Listener
                                 "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除",100),
                                 "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除",150),
                                 "playerEditBook" => new EventStructure(128,64,"本の編集",-1),
+                                "playerBucketFill" => new EventStructure(128,64,"バケツの中を満たす",1),
+                                "playerChat" => new EventStructure(5,0,"チャットを行う",20),
                                 "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする",-1),
-                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",150),
-                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する",150)];
+                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",60),
+                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する",40)];
     }
 
 
@@ -372,6 +376,26 @@ class Main extends PluginBase implements Listener
         if($this->shuffle_flag && $this->DURING_GAME)
         {
             $this->giveEmerald($player, $this->event_struct["playerToggleSwim"]);
+        }
+    }
+
+
+    public function playerBucketFill(PlayerBucketFillEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->shuffle_flag && $this->DURING_GAME)
+        {
+            $this->giveEmerald($player, $this->event_struct["playerBucketFill"]);
+        }
+    }
+
+
+    public function playerChat(PlayerChatEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->shuffle_flag && $this->DURING_GAME)
+        {
+            $this->giveEmerald($player, $this->event_struct["playerChat"]);
         }
     }
 
