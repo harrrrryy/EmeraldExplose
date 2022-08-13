@@ -29,8 +29,10 @@ use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\event\player\PlayerChangeSkinEvent;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
+use pocketmine\event\inventory\CraftItemEvent;
 
 use pocketmine\world\Position;
 
@@ -50,7 +52,7 @@ class Main extends PluginBase implements Listener
 {
     public $event_struct;
     private $item_fact;
-    private $EMERALD_EXCHANGE_RATE = 20;
+    private $EMERALD_EXCHANGE_RATE = 100;
     private $GIVE_TNT = 1;
     private $ISWINNER = false;
     private $DURING_GAME = false;
@@ -63,19 +65,21 @@ class Main extends PluginBase implements Listener
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->item_fact = new ItemFactory();
         $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する",-1),
-                                "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除",100),
-                                "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる",200),
-                                "playerEmote" => new EventStructure(5,0,"エモートを実行する",-1),
+                                "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除",30),
+                                "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる",20),
+                                "playerEmote" => new EventStructure(5,0,"エモートを実行する",15),
                                 "playerBedLeave" => new EventStructure(20,5,"ベッドから離れる",-1),
                                 "playerJump" => new EventStructure(2,0,"ジャンプする",300),
-                                "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除",100),
-                                "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除",150),
+                                "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除",30),
+                                "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除",30),
                                 "playerEditBook" => new EventStructure(128,64,"本の編集",-1),
                                 "playerBucketFill" => new EventStructure(128,64,"バケツの中を満たす",1),
                                 "playerChat" => new EventStructure(5,0,"チャットを行う",20),
+                                "playerChangeSkin" => new EventStructure(5,0,"スキンを変える",20),
                                 "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする",-1),
-                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",60),
-                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する",40)];
+                                "craftItem" => new EventStructure(2,0,"アイテムをクラフトする",10),
+                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",20),
+                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する",20)];
     }
 
 
@@ -396,6 +400,26 @@ class Main extends PluginBase implements Listener
         if($this->shuffle_flag && $this->DURING_GAME)
         {
             $this->giveEmerald($player, $this->event_struct["playerChat"]);
+        }
+    }
+
+
+    public function playerChangeSkin(PlayerChangeSkinEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->shuffle_flag && $this->DURING_GAME)
+        {
+            $this->giveEmerald($player, $this->event_struct["playerChangeSkin"]);
+        }
+    }
+
+
+    public function craftItem(CraftItemEvent $event)
+    {
+        $player = $event->getPlayer();
+        if($this->shuffle_flag && $this->DURING_GAME)
+        {
+            $this->giveEmerald($player, $this->event_struct["craftItem"]);
         }
     }
 
