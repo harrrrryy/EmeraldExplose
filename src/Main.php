@@ -113,6 +113,7 @@ class Main extends PluginBase implements Listener
             foreach(Server::getInstance()->getOnlinePlayers() as $player)
             {
                 $player->teleport($pos);
+                $player->getInventory()->clearAll();
             }
         }
         return true;
