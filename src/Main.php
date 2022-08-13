@@ -60,36 +60,47 @@ class Main extends PluginBase implements Listener
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->item_fact = new ItemFactory();
-        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する"),
-                                "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除"),
-                                "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる"),
-                                "playerEmote" => new EventStructure(5,0,"エモートを実行する"),
-                                "playerBedLeave" => new EventStructure(20,5,"ベッドから離れる"),
-                                "playerJump" => new EventStructure(2,0,"ジャンプする"),
-                                "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除"),
-                                "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除"),
-                                "playerEditBook" => new EventStructure(128,64,"本の編集"),
-                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする"),
-                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する"),
-                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する")];
+        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する",-1),
+                                "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除",100),
+                                "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる",200),
+                                "playerEmote" => new EventStructure(5,0,"エモートを実行する",-1),
+                                "playerBedLeave" => new EventStructure(20,5,"ベッドから離れる",-1),
+                                "playerJump" => new EventStructure(2,0,"ジャンプする",300),
+                                "playerToggleSprint" => new EventStructure(1,0,"ダッシュを実行/解除",100),
+                                "playerToggleSwim" => new EventStructure(2,0,"水泳の実行/解除",150),
+                                "playerEditBook" => new EventStructure(128,64,"本の編集",-1),
+                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする",-1),
+                                "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",150),
+                                "blockPlace" => new EventStructure(3,0,"ブロックを設置する",150)];
     }
 
 
-    public function giveEmerald(Player $p, int $num): bool
+    public function giveEmerald(Player $p, EventStructure $es): bool
     {
         if(!$this->DURING_GAME)
         {
             return false;
         }
 
+        if($es->get_emerald_times != -1 
+           && $es->get_emerald_counter >= $es->get_emerald_times)
+        {
+            return false;
+        }
+
         $item = VanillaItems::EMERALD();
         $inventory = $p->getInventory();
-        for($i = 1; $i <= $num; $i++)
+        for($i = 1; $i <= $es->can_get_emerald; $i++)
         {
             if($inventory->canAddItem($item))
             {
                 $inventory->addItem($item);
             }
+        }
+
+        if($es->get_emerald_times != -1)
+        {
+            ++$es->get_emerald_counter;            
         }
         return true;
     }
@@ -155,7 +166,10 @@ class Main extends PluginBase implements Listener
                 }
                 foreach($this->event_struct as $key => $value)
                 {
-                    $s->sendMessage($this->event_struct[$key]->explanation.": ".strval($this->event_struct[$key]->can_get_emerald));
+                    if($this->event_struct[$key]->can_get_emerald != 0)
+                    {
+                        $s->sendMessage($this->event_struct[$key]->explanation.": ".strval($this->event_struct[$key]->can_get_emerald));
+                    }                  
                 }
                 return true;
             case "exchange_tnt":
@@ -225,6 +239,10 @@ class Main extends PluginBase implements Listener
                             $this->ISWINNER = false;
                             $this->resporn_position = $s->getPosition();
                             $this->shuffle();
+                            foreach(Server::getInstance()->getOnlinePlayers() as $player)
+                            {
+                                $player->getInventory()->clearAll();
+                            }
                             return;
                         }
                     }
@@ -253,9 +271,9 @@ class Main extends PluginBase implements Listener
     public function onJoinPlayer(PlayerJoinEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerJoin"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerJoin"]);
         }
     }
 
@@ -263,9 +281,9 @@ class Main extends PluginBase implements Listener
     public function afterTogglePlayer(PlayerToggleSneakEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerToggleSneak"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerToggleSneak"]);
         }
     }
 
@@ -273,9 +291,9 @@ class Main extends PluginBase implements Listener
     public function playerDropItem(PlayerDropItemEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerDropItem"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerDropItem"]);
         }
     }
 
@@ -283,9 +301,9 @@ class Main extends PluginBase implements Listener
     public function playerEmote(PlayerEmoteEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerEmote"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerEmote"]);
         }
     }
 
@@ -293,9 +311,9 @@ class Main extends PluginBase implements Listener
     public function playerBedLeave(PlayerBedLeaveEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerBedLeave"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerBedLeave"]);
         }
     }
 
@@ -303,18 +321,18 @@ class Main extends PluginBase implements Listener
     public function playerJump(PlayerJumpEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerJump"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerJump"]);
         }
     }
 
     public function playerEditBook(PlayerEditBookEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerEditBook"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerEditBook"]);
         }
     }
 
@@ -324,9 +342,9 @@ class Main extends PluginBase implements Listener
     public function playerMove(PlayerMoveEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerMove"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerMove"]);
         }
     }
     */
@@ -335,9 +353,9 @@ class Main extends PluginBase implements Listener
     public function playerToggleSprint(PlayerToggleSprintEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerToggleSprint"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerToggleSprint"]);
         }
     }
 
@@ -345,9 +363,9 @@ class Main extends PluginBase implements Listener
     public function playerToggleSwim(PlayerToggleSwimEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["playerToggleSwim"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["playerToggleSwim"]);
         }
     }
 
@@ -356,9 +374,9 @@ class Main extends PluginBase implements Listener
     public function openInventory(InventoryOpenEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["inventoryOpen"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["inventoryOpen"]);
         }
     }
 
@@ -366,18 +384,18 @@ class Main extends PluginBase implements Listener
     public function BlockBreak(BlockBreakEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["blockBreak"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["blockBreak"]);
         }
     }
 
     public function BlockPlace(BlockPlaceEvent $event)
     {
         $player = $event->getPlayer();
-        if($this->shuffle_flag)
+        if($this->shuffle_flag && $this->DURING_GAME)
         {
-            $this->giveEmerald($player, $this->event_struct["blockPlace"]->can_get_emerald);
+            $this->giveEmerald($player, $this->event_struct["blockPlace"]);
         }
     }
 }
@@ -389,11 +407,15 @@ class EventStructure
     public int $emerald_min;
     public string $explanation;
     public int $can_get_emerald;
-    function __construct(int $max, int $min, string $explanation)
+    public int $get_emerald_times;
+    public int $get_emerald_counter;
+
+    function __construct(int $max, int $min, string $explanation, int $upper_limit)
     {
         $this->emerald_max = $max;
         $this->emerald_min = $min;
         $this->explanation = $explanation;
+        $this->get_emerald_times = $upper_limit;
+        $this->get_emerald_counter = 0;
     }
-
 }
