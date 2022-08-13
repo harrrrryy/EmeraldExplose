@@ -110,8 +110,8 @@ class Main extends PluginBase implements Listener
         if(!is_null($p))
         {
             Server::getInstance()->getLogger()->info("Finish! \n §5WINNER : §2".$p->getName());
-            $p->sendMessage("§lFinish!!!!");
-            $p->sendMessage("§l§5WINNER : §l§2".$p->getName());
+            $p->sendTitle("§lFinish!!!!");
+            $p->sendTitle("§l§5WINNER : §l§2".$p->getName());
         }
         else
         {
@@ -228,12 +228,12 @@ class Main extends PluginBase implements Listener
                     {
                         if($count >= 1)
                         {
-                            $s->sendMessage("§l".strval($count));
+                            $s->sendTitle("§l".strval($count));
                             --$count;
                         }
                         else
                         {
-                            $s->sendMessage("§l§3game start!");
+                            $s->sendTitle("§l§3game start!");
                             $this->getScheduler()->cancelAllTasks();
                             $this->DURING_GAME = true;
                             $this->ISWINNER = false;
