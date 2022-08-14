@@ -264,6 +264,14 @@ class Main extends PluginBase implements Listener
                 return true;
             case "game_end":
                 $this->gameEnd(null, $this->resporn_position);
+                return true;
+            case "tpall":
+                $pos = $s->getPosition();
+                foreach(Server::getInstance()->getOnlinePlayers() as $player)
+                {
+                    $player->teleport($pos);
+                }
+                return true;
         }
         return true;
     }

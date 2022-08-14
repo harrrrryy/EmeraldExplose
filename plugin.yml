@@ -32,6 +32,10 @@ commands:
     description: "execute when game is ended"
     usage: "/game_end"
     permission: emeraldexplose.op
+  tpall:
+    description: "tp all player to commandsender"
+    usage: "/tpall"
+    permission: emeraldexplose.op
 
 permissions:
   emeraldexplose.op:
