@@ -52,7 +52,7 @@ class Main extends PluginBase implements Listener
 {
     public $event_struct;
     private $item_fact;
-    private $EMERALD_EXCHANGE_RATE = 100;
+    private $EMERALD_EXCHANGE_RATE = 64;
     private $GIVE_TNT = 1;
     private $ISWINNER = false;
     private $DURING_GAME = false;
@@ -64,7 +64,7 @@ class Main extends PluginBase implements Listener
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         $this->item_fact = new ItemFactory();
-        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する",10),
+        $this->event_struct = [ "playerJoin" => new EventStructure(15,0,"サーバーに参加する",5),
                                 "playerToggleSneak" => new EventStructure(1,0,"スニークを実行/解除",30),
                                 "playerDropItem" => new EventStructure(2,0,"アイテムをドロップさせる",20),
                                 "playerEmote" => new EventStructure(5,0,"エモートを実行する",15),
@@ -76,7 +76,7 @@ class Main extends PluginBase implements Listener
                                 "playerBucketFill" => new EventStructure(128,64,"バケツの中を満たす",1),
                                 "playerChat" => new EventStructure(5,0,"チャットを行う",20),
                                 "playerChangeSkin" => new EventStructure(5,0,"スキンを変える",20),
-                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする",-1),
+                                "inventoryOpen" => new EventStructure(3,0,"インベントリを開け閉めする",10),
                                 "craftItem" => new EventStructure(2,0,"アイテムをクラフトする",10),
                                 "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",20),
                                 "blockPlace" => new EventStructure(3,0,"ブロックを設置する",20)];
@@ -137,6 +137,11 @@ class Main extends PluginBase implements Listener
                 $player->teleport($pos);
                 $player->getInventory()->clearAll();
             }
+        }
+
+        foreach($this->event_struct as $key => $value)
+        {
+            $this->event_struct[$key]->get_emerald_counter = 0;
         }
         return true;
     }
@@ -264,6 +269,14 @@ class Main extends PluginBase implements Listener
                 return true;
             case "game_end":
                 $this->gameEnd(null, $this->resporn_position);
+                return true;
+            case "tpall":
+                $pos = $s->getPosition();
+                foreach(Server::getInstance()->getOnlinePlayers() as $player)
+                {
+                    $player->teleport($pos);
+                }
+                return true;
         }
         return true;
     }
@@ -288,6 +301,10 @@ class Main extends PluginBase implements Listener
         if($this->shuffle_flag && $this->DURING_GAME)
         {
             $this->giveEmerald($player, $this->event_struct["playerJoin"]);
+        }
+        else if(!$this->DURING_GAME)
+        {
+            $player->getInventory()->clearAll();
         }
     }
 
