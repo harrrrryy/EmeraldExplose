@@ -126,6 +126,11 @@ class Main extends PluginBase implements Listener
         }
         else
         {
+            foreach(Server::getInstance()->getOnlinePlayers() as $player)
+            {
+                $player->sendTitle("Time Up!");
+                $player->sendMessage("制限時間になったのでゲームを終了しました");
+            }
             echo "game_end command was executed";
         }
         $this->DURING_GAME = false;
@@ -164,13 +169,12 @@ class Main extends PluginBase implements Listener
 		switch($label)
         {
             case "test":
-                $s->sendMessage("success!!!");
-				$emerald = VanillaItems::EMERALD();
-                $inventory = $s->getInventory();
-            
-                if($inventory->canAddItem($emerald)){
-                    $inventory->addItem($emerald);
-                }
+                //$s->sendSubTitle("sendSubTitle");             
+                //$s->sendActionBarMessage("sendActionBarMessage");
+                //$s->sendPopup("sendPopup");
+                //$s->sendTip("sendTip");
+                
+                //$s->sendMessage("success!!!");
                 return true;
             case "shuffle":
                 $this->shuffle();
@@ -238,17 +242,17 @@ class Main extends PluginBase implements Listener
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
                 return true;
             case "game_start":
-                $count = 3;
+                $count_down = 3;
                 $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(
-                    function() use ($s, &$count) : void
+                    function() use ($s, &$count_down) : void
                     {
-                        if($count >= 1)
+                        if($count_down >= 1)
                         {
                             foreach(Server::getInstance()->getOnlinePlayers() as $player)
                             {
-                                $player->sendTitle("§l".strval($count));
+                                $player->sendTitle("§l".strval($count_down));
                             } 
-                            --$count;
+                            --$count_down;
                         }
                         else
                         {                                                     
@@ -262,6 +266,27 @@ class Main extends PluginBase implements Listener
                                 $player->sendTitle("§l§3game start!");
                                 $player->getInventory()->clearAll();
                             }
+
+                            $timer_count = 300;
+                            $this->getScheduler()->scheduleRepeatingTask(new ClosureTask(
+                                function() use ($s, &$timer_count) : void
+                                {
+                                    if($timer_count >= 1)
+                                    {
+                                        foreach(Server::getInstance()->getOnlinePlayers() as $player)
+                                        {
+                                            $player->sendActionBarMessage("§l".strval($timer_count));
+                                        } 
+                                        --$timer_count;
+                                    }
+                                    else
+                                    {
+                                        $this->getScheduler()->cancelAllTasks();
+                                        $this->gameEnd(null, $this->resporn_position);                                                     
+                                        return;
+                                    }
+                                }
+                            ), 20);
                             return;
                         }
                     }
