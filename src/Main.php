@@ -6,6 +6,8 @@ namespace halinezumi\emeraldExplose;
 
 use pocketmine\plugin\PluginBase;
 
+use pocketmine\block\VanillaBlocks;
+
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
@@ -46,7 +48,11 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 
+use pocketmine\math\Vector3;
+
 use pocketmine\Server;
+
+use pocketmine\World\World;
 
 class Main extends PluginBase implements Listener
 {
@@ -58,7 +64,8 @@ class Main extends PluginBase implements Listener
     private $DURING_GAME = false;
     private $resporn_position;
     private $shuffle_flag;
-    
+    private $can_set_block_list;
+    private $world;
 
     public function onEnable(): void
     {
@@ -80,6 +87,9 @@ class Main extends PluginBase implements Listener
                                 "craftItem" => new EventStructure(2,0,"アイテムをクラフトする",10),
                                 "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",20),
                                 "blockPlace" => new EventStructure(3,0,"ブロックを設置する",20)];
+
+        $this->can_set_block_list = [VanillaBlocks::EMERALD(),
+                                     VanillaBlocks::DIAMOND()];
     }
 
 
@@ -239,7 +249,14 @@ class Main extends PluginBase implements Listener
                 return true;
             case "pos":
                 $position = $s->getPosition();
+                if(is_null($this->world))
+                {
+                    $this->world = $position->getWorld();
+                }
+                $vector3 = new Vector3(328, 99, 199);
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
+                $this->world->setBlock($position, $this->can_set_block_list[mt_rand(0,1)]);
+                $this->world->setBlock($vector3, $this->can_set_block_list[mt_rand(0,1)]);
                 return true;
             case "game_start":
                 $count_down = 3;
