@@ -130,6 +130,7 @@ class Main extends PluginBase implements Listener
 
     public function gameEnd(Player $p = NULL, Position $pos = NULL)
     {
+        $this->getScheduler()->cancelAllTasks();
         if(!is_null($p))
         {
             Server::getInstance()->getLogger()->info("Finish! \n §5WINNER : §2".$p->getName());
@@ -326,6 +327,7 @@ class Main extends PluginBase implements Listener
                             $this->ISWINNER = false;
                             $this->resporn_position = $s->getPosition();
                             $this->shuffle();
+                            $this->generateStage($s->getPosition());
                             foreach(Server::getInstance()->getOnlinePlayers() as $player)
                             {
                                 $player->sendTitle("§l§3game start!");
