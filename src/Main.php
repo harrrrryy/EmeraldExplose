@@ -140,7 +140,13 @@ class Main extends PluginBase implements Listener
                                      VanillaBlocks::GLASS(),
                                      VanillaBlocks::GLOWSTONE(),
                                      VanillaBlocks::BOOKSHELF(),
-                                     VanillaBlocks::ENCHANTING_TABLE()];
+                                     VanillaBlocks::ENCHANTING_TABLE(),
+                                     VanillaBlocks::COBBLESTONE(),
+                                     VanillaBlocks::COBBLESTONE_SLAB(),
+                                     VanillaBlocks::DIRT(),
+                                     VanillaBlocks::GRASS_PATH(),
+                                     VanillaBlocks::GRASS(),
+                                     VanillaBlocks::GRAVEL()];
     }
 
 
