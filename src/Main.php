@@ -66,8 +66,8 @@ class Main extends PluginBase implements Listener
     private $shuffle_flag;
     private $can_set_block_list;
     private $world;
-    private $STAGE_DEPTH = 10;
-    private $STAGE_WIDTH = 10;
+    private $STAGE_DEPTH = 20;
+    private $STAGE_WIDTH = 20;
     private $STAGE_HEIGHT = 3;
     private $stage_endpoint1;
     private $stage_endpoint2;
@@ -94,7 +94,59 @@ class Main extends PluginBase implements Listener
                                 "blockPlace" => new EventStructure(3,0,"ブロックを設置する",20)];
 
         $this->can_set_block_list = [VanillaBlocks::EMERALD(),
-                                     VanillaBlocks::DIAMOND()];
+                                     VanillaBlocks::DIAMOND(),
+                                     VanillaBlocks::ACACIA_WOOD(),
+                                     VanillaBlocks::BIRCH_WOOD(),
+                                     VanillaBlocks::DARK_OAK_WOOD(),
+                                     VanillaBlocks::JUNGLE_WOOD(),
+                                     VanillaBlocks::OAK_WOOD(),
+                                     VanillaBlocks::SPRUCE_WOOD(),
+                                     VanillaBlocks::STRIPPED_ACACIA_WOOD(),
+                                     VanillaBlocks::STRIPPED_BIRCH_WOOD(),
+                                     VanillaBlocks::STRIPPED_DARK_OAK_WOOD(),
+                                     VanillaBlocks::STRIPPED_JUNGLE_WOOD(),
+                                     VanillaBlocks::STRIPPED_OAK_WOOD(),
+                                     VanillaBlocks::STRIPPED_SPRUCE_WOOD(),
+                                     VanillaBlocks::CHISELED_RED_SANDSTONE(),
+                                     VanillaBlocks::CHISELED_SANDSTONE(),
+                                     VanillaBlocks::CUT_RED_SANDSTONE(),
+                                     VanillaBlocks::CUT_RED_SANDSTONE_SLAB(),
+                                     VanillaBlocks::CUT_SANDSTONE(),
+                                     VanillaBlocks::CUT_SANDSTONE_SLAB(),
+                                     VanillaBlocks::RED_SAND(),
+                                     VanillaBlocks::RED_SANDSTONE(),
+                                     VanillaBlocks::RED_SANDSTONE_SLAB(),
+                                     VanillaBlocks::SAND(),
+                                     VanillaBlocks::SANDSTONE(),
+                                     VanillaBlocks::SANDSTONE_SLAB(),
+                                     VanillaBlocks::SOUL_SAND(),
+                                     VanillaBlocks::BLUE_ICE(),
+                                     // 設置してすぐ水になるので保留
+                                     //VanillaBlocks::FROSTED_ICE(),
+                                     VanillaBlocks::ICE(),
+                                     VanillaBlocks::PACKED_ICE(),
+                                     VanillaBlocks::STONE(),
+                                     VanillaBlocks::COAL_ORE(),
+                                     VanillaBlocks::DIAMOND_ORE(),
+                                     VanillaBlocks::EMERALD_ORE(),
+                                     VanillaBlocks::GOLD_ORE(),
+                                     VanillaBlocks::IRON_ORE(),
+                                     VanillaBlocks::LAPIS_LAZULI_ORE(),
+                                     VanillaBlocks::NETHER_QUARTZ_ORE(),
+                                     VanillaBlocks::NETHER_REACTOR_CORE(),
+                                     VanillaBlocks::REDSTONE_ORE(),
+                                     VanillaBlocks::CRAFTING_TABLE(),
+                                     VanillaBlocks::FURNACE(),
+                                     VanillaBlocks::GLASS(),
+                                     VanillaBlocks::GLOWSTONE(),
+                                     VanillaBlocks::BOOKSHELF(),
+                                     VanillaBlocks::ENCHANTING_TABLE(),
+                                     VanillaBlocks::COBBLESTONE(),
+                                     VanillaBlocks::COBBLESTONE_SLAB(),
+                                     VanillaBlocks::DIRT(),
+                                     VanillaBlocks::GRASS_PATH(),
+                                     VanillaBlocks::GRASS(),
+                                     VanillaBlocks::GRAVEL()];
     }
 
 
