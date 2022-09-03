@@ -298,14 +298,7 @@ class Main extends PluginBase implements Listener
                 return true;
             case "pos":
                 $position = $s->getPosition();
-                if(is_null($this->world))
-                {
-                    $this->world = $position->getWorld();
-                }
-                $vector3 = new Vector3(328, 99, 199);
                 $s->sendMessage("(x,y,z)=(".strval($position->x).", ".strval($position->y).", ".strval($position->z).")");
-                $this->world->setBlock($position, $this->can_set_block_list[mt_rand(0,1)]);
-                $this->world->setBlock($vector3, $this->can_set_block_list[mt_rand(0,1)]);
                 return true;
             case "game_start":
                 $count_down = 3;
