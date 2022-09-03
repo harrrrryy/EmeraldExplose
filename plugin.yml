@@ -36,6 +36,10 @@ commands:
     description: "tp all player to commandsender"
     usage: "/tpall"
     permission: emeraldexplose.op
+  generate_stage:
+    description: "generate stage for battle"
+    usage: "/generate_stage"
+    permission: emeraldexplose.op
 
 permissions:
   emeraldexplose.op:

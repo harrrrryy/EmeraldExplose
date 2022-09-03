@@ -6,6 +6,8 @@ namespace halinezumi\emeraldExplose;
 
 use pocketmine\plugin\PluginBase;
 
+use pocketmine\block\VanillaBlocks;
+
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 
@@ -46,7 +48,11 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 
+use pocketmine\math\Vector3;
+
 use pocketmine\Server;
+
+use pocketmine\World\World;
 
 class Main extends PluginBase implements Listener
 {
@@ -58,7 +64,13 @@ class Main extends PluginBase implements Listener
     private $DURING_GAME = false;
     private $resporn_position;
     private $shuffle_flag;
-    
+    private $can_set_block_list;
+    private $world;
+    private $STAGE_DEPTH = 10;
+    private $STAGE_WIDTH = 10;
+    private $STAGE_HEIGHT = 3;
+    private $stage_endpoint1;
+    private $stage_endpoint2;
 
     public function onEnable(): void
     {
@@ -80,6 +92,9 @@ class Main extends PluginBase implements Listener
                                 "craftItem" => new EventStructure(2,0,"アイテムをクラフトする",10),
                                 "blockBreak" => new EventStructure(4,0,"ブロックを破壊する",20),
                                 "blockPlace" => new EventStructure(3,0,"ブロックを設置する",20)];
+
+        $this->can_set_block_list = [VanillaBlocks::EMERALD(),
+                                     VanillaBlocks::DIAMOND()];
     }
 
 
@@ -115,6 +130,7 @@ class Main extends PluginBase implements Listener
 
     public function gameEnd(Player $p = NULL, Position $pos = NULL)
     {
+        $this->getScheduler()->cancelAllTasks();
         if(!is_null($p))
         {
             Server::getInstance()->getLogger()->info("Finish! \n §5WINNER : §2".$p->getName());
@@ -159,7 +175,50 @@ class Main extends PluginBase implements Listener
             $this->event_struct[$key]->can_get_emerald = mt_rand($this->event_struct[$key]->emerald_min, $this->event_struct[$key]->emerald_max);
         }
         return true;
-    } 
+    }
+    
+    public function generateStage(Vector3 $vector): bool
+    {
+        $this->deleteStage();
+        if(is_null($this->world))
+        {
+            $this->world = $vector->getWorld();
+        }
+        $this ->stage_endpoint1 = new Vector3($vector->x - $this->STAGE_WIDTH, $vector->y, $vector->z - $this->STAGE_DEPTH);
+        $this ->stage_endpoint2 = new Vector3($vector->x + $this->STAGE_WIDTH, $vector->y - $this->STAGE_HEIGHT, $vector->z + $this->STAGE_DEPTH);
+        for($k = $vector->y; $k > $vector->y - $this->STAGE_HEIGHT; $k--)
+        {
+            for($i = $vector->z - $this->STAGE_DEPTH; $i <= $vector->z + $this->STAGE_DEPTH; $i++)
+            {
+                for($j = $vector->x - $this->STAGE_WIDTH; $j <= $vector->x + $this->STAGE_WIDTH; $j++)
+                {
+                    $this->world->setBlock(new Vector3($j, $k, $i), $this->can_set_block_list[mt_rand(0,count($this->can_set_block_list)-1)]);
+                }
+            }
+        }
+        return True;
+    }
+
+    public function deleteStage(): bool
+    {
+        if(is_null($this->stage_endpoint1) || is_null($this->stage_endpoint2) || is_null($this->world))
+        {
+            return false;
+        }
+        for($k = $this->stage_endpoint1->y; $k > $this->stage_endpoint2->y; $k--)
+        {
+            for($i = $this->stage_endpoint1->z; $i <= $this->stage_endpoint2->z; $i++)
+            {
+                for($j = $this->stage_endpoint1->x; $j <= $this->stage_endpoint2->x; $j++)
+                {
+                    $this->world->setBlock(new Vector3($j, $k, $i), VanillaBlocks::AIR());
+                }
+            }
+        }
+        $this->stage_endpoint1 = NULL;
+        $this->stage_endpoint2 = NULL;
+        return true;
+    }
 
 
     public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
@@ -261,6 +320,7 @@ class Main extends PluginBase implements Listener
                             $this->ISWINNER = false;
                             $this->resporn_position = $s->getPosition();
                             $this->shuffle();
+                            $this->generateStage($s->getPosition());
                             foreach(Server::getInstance()->getOnlinePlayers() as $player)
                             {
                                 $player->sendTitle("§l§3game start!");
@@ -302,6 +362,8 @@ class Main extends PluginBase implements Listener
                     $player->teleport($pos);
                 }
                 return true;
+            case "generate_stage":
+                $this->generateStage($s->getPosition());
         }
         return true;
     }
