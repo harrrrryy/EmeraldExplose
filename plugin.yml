@@ -40,6 +40,10 @@ commands:
     description: "generate stage for battle"
     usage: "/generate_stage"
     permission: emeraldexplose.op
+  delete_most_blocks:
+    description: "delete most blocks for making abyss"
+    usage: "/delete_most_blocks"
+    permission: emeraldexplose.op
 
 permissions:
   emeraldexplose.op:

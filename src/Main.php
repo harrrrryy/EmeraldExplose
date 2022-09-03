@@ -71,6 +71,9 @@ class Main extends PluginBase implements Listener
     private $STAGE_HEIGHT = 3;
     private $stage_endpoint1;
     private $stage_endpoint2;
+    private $DELETE_AREA_DEPTH = 25;
+    private $DELETE_AREA_WIDTH = 25;
+    private $DELETE_AREA_HEIGHT = 90;
 
     public function onEnable(): void
     {
@@ -416,6 +419,27 @@ class Main extends PluginBase implements Listener
                 return true;
             case "generate_stage":
                 $this->generateStage($s->getPosition());
+                return true;
+            // 指定した範囲が広すぎるとメモリ不足でエラー出るので注意
+            case "delete_most_blocks":
+                $position = $s->getPosition();
+                $endpoint1 = new Vector3((int)$position->x - $this->DELETE_AREA_WIDTH, $this->DELETE_AREA_HEIGHT, (int)$position->z - $this->DELETE_AREA_DEPTH);
+                $endpoint2 = new Vector3((int)$position->x + $this->DELETE_AREA_WIDTH, -1, (int)$position->z + $this->DELETE_AREA_DEPTH);
+                if(is_null($this->world))
+                {
+                    $this->world = $position->getWorld();
+                }
+                for($k = $endpoint1->y; $k > $endpoint2->y; $k--)
+                {
+                    for($i = $endpoint1->z; $i <= $endpoint2->z; $i++)
+                    {
+                        for($j = $endpoint1->x; $j <= $endpoint2->x; $j++)
+                        {
+                            //$this->world->setBlock(new Vector3($j, $k, $i), VanillaBlocks::AIR());
+                            $this->world->setBlockAt($j, $k, $i, VanillaBlocks::AIR());
+                        }
+                    }
+                }
         }
         return true;
     }
