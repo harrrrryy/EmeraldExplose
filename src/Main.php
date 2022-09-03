@@ -66,6 +66,9 @@ class Main extends PluginBase implements Listener
     private $shuffle_flag;
     private $can_set_block_list;
     private $world;
+    private $STAGE_DEPTH = 10;
+    private $STAGE_WIDTH = 10;
+    private $STAGE_HEIGHT = 3;
 
     public function onEnable(): void
     {
@@ -169,7 +172,26 @@ class Main extends PluginBase implements Listener
             $this->event_struct[$key]->can_get_emerald = mt_rand($this->event_struct[$key]->emerald_min, $this->event_struct[$key]->emerald_max);
         }
         return true;
-    } 
+    }
+    
+    public function generateStage(Vector3 $vector): bool
+    {
+        if(is_null($this->world))
+        {
+            $this->world = $vector->getWorld();
+        }
+        for($k = $vector->y; $k > $vector->y - $this->STAGE_HEIGHT; $k--)
+        {
+            for($i = $vector->z - $this->STAGE_DEPTH; $i <= $vector->z + $this->STAGE_DEPTH; $i++)
+            {
+                for($j = $vector->x - $this->STAGE_WIDTH; $j <= $vector->x + $this->STAGE_WIDTH; $j++)
+                {
+                    $this->world->setBlock(new Vector3($j, $k, $i), $this->can_set_block_list[mt_rand(0,count($this->can_set_block_list)-1)]);
+                }
+            }
+        }
+        return True;
+    }
 
 
     public function onCommand(CommandSender $s, Command $c, $label, array $a): bool
@@ -319,6 +341,8 @@ class Main extends PluginBase implements Listener
                     $player->teleport($pos);
                 }
                 return true;
+            case "generate_stage":
+                $this->generateStage($s->getPosition());
         }
         return true;
     }
