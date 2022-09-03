@@ -69,6 +69,8 @@ class Main extends PluginBase implements Listener
     private $STAGE_DEPTH = 10;
     private $STAGE_WIDTH = 10;
     private $STAGE_HEIGHT = 3;
+    private $stage_endpoint1;
+    private $stage_endpoint2;
 
     public function onEnable(): void
     {
@@ -176,10 +178,13 @@ class Main extends PluginBase implements Listener
     
     public function generateStage(Vector3 $vector): bool
     {
+        $this->deleteStage();
         if(is_null($this->world))
         {
             $this->world = $vector->getWorld();
         }
+        $this ->stage_endpoint1 = new Vector3($vector->x - $this->STAGE_WIDTH, $vector->y, $vector->z - $this->STAGE_DEPTH);
+        $this ->stage_endpoint2 = new Vector3($vector->x + $this->STAGE_WIDTH, $vector->y - $this->STAGE_HEIGHT, $vector->z + $this->STAGE_DEPTH);
         for($k = $vector->y; $k > $vector->y - $this->STAGE_HEIGHT; $k--)
         {
             for($i = $vector->z - $this->STAGE_DEPTH; $i <= $vector->z + $this->STAGE_DEPTH; $i++)
@@ -191,6 +196,27 @@ class Main extends PluginBase implements Listener
             }
         }
         return True;
+    }
+
+    public function deleteStage(): bool
+    {
+        if(is_null($this->stage_endpoint1) || is_null($this->stage_endpoint2) || is_null($this->world))
+        {
+            return false;
+        }
+        for($k = $this->stage_endpoint1->y; $k > $this->stage_endpoint2->y; $k--)
+        {
+            for($i = $this->stage_endpoint1->z; $i <= $this->stage_endpoint2->z; $i++)
+            {
+                for($j = $this->stage_endpoint1->x; $j <= $this->stage_endpoint2->x; $j++)
+                {
+                    $this->world->setBlock(new Vector3($j, $k, $i), VanillaBlocks::AIR());
+                }
+            }
+        }
+        $this->stage_endpoint1 = NULL;
+        $this->stage_endpoint2 = NULL;
+        return true;
     }
 
 
