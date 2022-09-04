@@ -71,9 +71,9 @@ class Main extends PluginBase implements Listener
     private $STAGE_HEIGHT = 3;
     private $stage_endpoint1;
     private $stage_endpoint2;
-    private $DELETE_AREA_DEPTH = 25;
-    private $DELETE_AREA_WIDTH = 25;
-    private $DELETE_AREA_HEIGHT = 90;
+    private $DELETE_AREA_DEPTH = 175;
+    private $DELETE_AREA_WIDTH = 175;
+    private $DELETE_AREA_HEIGHT = 5;
 
     public function onEnable(): void
     {
@@ -373,7 +373,10 @@ class Main extends PluginBase implements Listener
                             $this->getScheduler()->cancelAllTasks();
                             $this->DURING_GAME = true;
                             $this->ISWINNER = false;
-                            $this->resporn_position = $s->getPosition();
+                            if(is_null($this->resporn_position))
+                            {
+                                $this->resporn_position = $s->getPosition();
+                            }
                             $this->shuffle();
                             $this->generateStage($s->getPosition());
                             foreach(Server::getInstance()->getOnlinePlayers() as $player)
@@ -423,14 +426,18 @@ class Main extends PluginBase implements Listener
             // 指定した範囲が広すぎるとメモリ不足でエラー出るので注意
             case "delete_most_blocks":
                 $position = $s->getPosition();
-                $endpoint1 = new Vector3((int)$position->x - $this->DELETE_AREA_WIDTH, $this->DELETE_AREA_HEIGHT, (int)$position->z - $this->DELETE_AREA_DEPTH);
-                $endpoint2 = new Vector3((int)$position->x + $this->DELETE_AREA_WIDTH, -1, (int)$position->z + $this->DELETE_AREA_DEPTH);
+                $endpoint1 = new Vector3((int)$position->x - $this->DELETE_AREA_WIDTH, (int)$position->y, (int)$position->z - $this->DELETE_AREA_DEPTH);
+                $endpoint2 = new Vector3((int)$position->x + $this->DELETE_AREA_WIDTH, (int)$position->y - $this->DELETE_AREA_HEIGHT, (int)$position->z + $this->DELETE_AREA_DEPTH);
                 if(is_null($this->world))
                 {
                     $this->world = $position->getWorld();
                 }
                 for($k = $endpoint1->y; $k > $endpoint2->y; $k--)
                 {
+                    if($k <= -1)
+                    {
+                        break;
+                    }
                     for($i = $endpoint1->z; $i <= $endpoint2->z; $i++)
                     {
                         for($j = $endpoint1->x; $j <= $endpoint2->x; $j++)
@@ -440,6 +447,8 @@ class Main extends PluginBase implements Listener
                         }
                     }
                 }
+                $this->world->setBlockAt((int)$position->x, 100, (int)$position->z, VanillaBlocks::EMERALD());
+                $this->resporn_position = new Position((int)$position->x, 100, (int)$position->z, $this->world);
         }
         return true;
     }
