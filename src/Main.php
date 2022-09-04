@@ -447,8 +447,16 @@ class Main extends PluginBase implements Listener
                         }
                     }
                 }
-                $this->world->setBlockAt((int)$position->x, 100, (int)$position->z, VanillaBlocks::EMERALD());
+
+                for($i = -5; $i < 5; $i++)
+                {
+                    for($j = -5; $j < 5; $j++)
+                    {
+                        $this->world->setBlockAt((int)$position->x+$i, 100, (int)$position->z+$j, VanillaBlocks::EMERALD());
+                    }
+                }         
                 $this->resporn_position = new Position((int)$position->x, 100, (int)$position->z, $this->world);
+                $s->teleport(new Position((int)$position->x, 100+2, (int)$position->z, $this->world));
         }
         return true;
     }
